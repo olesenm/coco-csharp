@@ -1,0 +1,47 @@
+# git-ls-files --others --exclude-from=.git/info/exclude
+# Lines that start with '#' are comments.
+
+# editor and misc backup files - anywhere
+*~
+.*~
+*.bak
+*.bak[0-9][0-9]
+*.orig
+*.orig[0-9][0-9]
+\#*\#
+
+# Coco backup for previous files - anywhere
+*.old
+
+# file-browser settings - anywhere
+.directory
+
+# CVS recovered versions - anywhere
+.#*
+
+# objects and archives - anywhere
+*.[oa]
+*.la
+*.so
+*.jar
+
+# Corefiles
+core
+
+# ignore generated executable
+/Coco.net
+
+# ignore Doxygen docs
+/html
+
+# source packages - anywhere
+*.tar.bz2
+*.tar.gz
+*.tar
+*.tgz
+*.gtgz
+
+# ignore .tags in the main directory
+/.tags
+
+# end-of-file
