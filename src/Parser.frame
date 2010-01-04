@@ -47,7 +47,11 @@ public class Parser {
 	public Parser(Scanner scanner) {
 		this.scanner = scanner;
 		errors = new Errors();
+		// user-defined initialization:
+-->constructor
 	}
+
+-->destructor
 
 	void SynErr (int n) {
 		if (errDist >= minErrDist) errors.SynErr(la.line, la.col, n);

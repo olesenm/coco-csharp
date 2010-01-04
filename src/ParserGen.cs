@@ -381,7 +381,7 @@ public class ParserGen {
 		foreach (Symbol sym in tab.terminals) GenErrorMsg(tErr, sym);
 
 		CopyFramePart("-->begin");
-		if (!tab.srcName.ToLower().EndsWith("coco.atg")) {
+		if (!tab.srcName.ToLower().EndsWith("coco-cs.atg")) {
 			gen.Close(); OpenGen(false); /* pdt */
 		}
 		if (usingPos != null) {CopySourcePart(usingPos, 0); gen.WriteLine();}
@@ -396,6 +396,22 @@ public class ParserGen {
 		gen.WriteLine("\tpublic const int maxT = {0};", tab.terminals.Count-1);
 		GenPragmas(); /* ML 2005/09/23 write the pragma kinds */
 		CopyFramePart("-->declarations"); CopySourcePart(tab.semDeclPos, 0);
+
+		CopyFramePart("-->constructor");
+		if (tab.initCodePos != null)
+		{
+			CopySourcePart(tab.initCodePos, 2);
+		}
+
+		CopyFramePart("-->destructor");
+		if (tab.deinitCodePos != null)
+		{
+			gen.WriteLine("\t~Parser() {");
+			gen.WriteLine("\t\t// user-defined destruction:");
+			CopySourcePart(tab.deinitCodePos, 2);
+			gen.WriteLine("\t}");
+		}
+
 		CopyFramePart("-->pragmas"); GenCodePragmas();
 		CopyFramePart("-->productions"); GenProductions();
 		CopyFramePart("-->parseRoot"); gen.WriteLine("\t\t{0}();", tab.gramSy.name);

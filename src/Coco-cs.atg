@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
-Coco.atg -- Attributed Grammar
+Coco-cs.atg -- Attributed Grammar for Coco/R C# version
 Compiler Generator Coco/R,
 Copyright (c) 1990, 2004 Hanspeter Moessenboeck, University of Linz
 extended by M. Loeberbauer & A. Woess, Univ. of Linz
@@ -27,7 +27,7 @@ Coco/R itself) does not fall under the GNU General Public License.
 -------------------------------------------------------------------------*/
 /*-------------------------------------------------------------------------
  compile with:
-   Coco Coco.atg -namespace at.jku.ssw.Coco
+   Coco Coco-cs.atg -namespace at.jku.ssw.Coco
 -------------------------------------------------------------------------*/
 
 using System.IO;
@@ -48,6 +48,9 @@ $namespace=at.jku.ssw.Coco   // grammar directive
 	string noString = "-none-"; // used in declarations of literal tokens
 
 /*-------------------------------------------------------------------------*/
+
+INITIALIZE      // Add to Parser constructor
+	genScanner = false;
 
 CHARACTERS
 	letter    = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_".
@@ -83,7 +86,7 @@ IGNORE cr + lf + tab
 
 PRODUCTIONS
 
-Coco                            (. Symbol sym; Graph g, g1, g2; string gramName; CharSet s; int beg; .)
+Coco                            (. Symbol sym; Graph g; string gramName; CharSet s; int beg; .)
 =
   [ // using statements
     ANY                          (. beg = t.pos; .)
@@ -96,11 +99,26 @@ Coco                            (. Symbol sym; Graph g, g1, g2; string gramName;
                                    beg = la.pos;
                                  .)
   { ANY }                       (. tab.semDeclPos = new Position(beg, la.pos, 0); .)
+
+  // this section can be used to add code to the constructor
+  [ "INITIALIZE"
+    [ ANY                       (. beg = t.pos; .)
+      { ANY }                   (. tab.initCodePos = new Position(beg, la.pos, 0); .)
+    ]
+  ]
+
+  // this section can be used to add code to the destructor
+  [ "DESTROY"
+    [ ANY                       (. beg = t.pos; .)
+      { ANY }                   (. tab.deinitCodePos = new Position(beg, la.pos, 0); .)
+    ]
+  ]
+
   [ "IGNORECASE"                (. dfa.ignoreCase = true; .) ]   /* pdt */
   [ "CHARACTERS" { SetDecl }]
   [ "TOKENS"  { TokenDecl<Node.t> }]
   [ "PRAGMAS" { TokenDecl<Node.pr> }]
-  { "COMMENTS"                  (. bool nested = false; .)
+  { "COMMENTS"                  (. Graph g1, g2; bool nested = false; .)
     "FROM" TokenExpr<out g1>
     "TO" TokenExpr<out g2>
     [ "NESTED"                  (. nested = true; .)
@@ -164,7 +182,9 @@ Coco                            (. Symbol sym; Graph g, g1, g2; string gramName;
                                          if (tab.ddt[0]) dfa.PrintStates();
                                        }
                                        Console.WriteLine(" generated");
-                                       if (tab.ddt[8]) pgen.WriteStatistics();
+                                       if (tab.ddt[8]) {
+                                         pgen.WriteStatistics();
+                                       }
                                      }
                                    }
                                    if (tab.ddt[6]) tab.PrintSymbolTable();

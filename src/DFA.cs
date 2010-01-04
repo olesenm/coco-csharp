@@ -908,7 +908,7 @@ public class DFA {
 		OpenGen(true); /* pdt */
 		if (dirtyDFA) MakeDeterministic();
 		CopyFramePart("-->begin");
-		if (!tab.srcName.ToLower().EndsWith("coco.atg")) {
+		if (!tab.srcName.ToLower().EndsWith("coco-cs.atg")) {
 			gen.Close(); OpenGen(false); /* pdt */
 		}
 		CopyFramePart("-->namespace");

@@ -37,7 +37,7 @@
 
   <Target Name="self">
     <Message Text="Self Build Coco/R..."/>
-    <Exec Command="$(AppName).exe -namespace at.jku.ssw.Coco Coco.atg"/>
+    <Exec Command="$(AppName).exe -namespace at.jku.ssw.Coco Coco-cs.atg"/>
   </Target>
 
   <PropertyGroup>

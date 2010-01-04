@@ -46,7 +46,7 @@
 			<arg value="Coco.exe" />
 			<arg value="-namespace" />
 			<arg value="at.jku.ssw.Coco" />
-			<arg value="Coco.atg" />
+			<arg value="Coco-cs.atg" />
 		</exec>
 	</target>
 
@@ -54,7 +54,7 @@
 		<exec program="Coco.exe">
 			<arg value="-namespace" />
 			<arg value="at.jku.ssw.Coco" />
-			<arg value="Coco.atg" />
+			<arg value="Coco-cs.atg" />
 		</exec>
 	</target>
 

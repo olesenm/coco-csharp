@@ -22,7 +22,7 @@ srcdir = @srcdir@
 INSTALL      = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 DATA_FILES = $(srcdir)/Parser.frame $(srcdir)/Scanner.frame
-DOC_FILES  = $(srcdir)/Coco.atg
+DOC_FILES  = $(srcdir)/Coco-cs.atg
 DATA_DIR   = $(datarootdir)/coco-cs
 LIB_COCO   = $(libdir)/coco-cs
 

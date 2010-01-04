@@ -51,7 +51,7 @@ public class Symbol {
 
 	// token kinds
 	public const int fixedToken    = 0; // e.g. 'a' ('b' | 'c') (structure of literals)
-	public const int classToken    = 1;	// e.g. digit {digit}   (at least one char class)
+	public const int classToken    = 1; // e.g. digit {digit}   (at least one char class)
 	public const int litToken      = 2; // e.g. "while"
 	public const int classLitToken = 3; // e.g. letter {letter} but without literals that have the same structure
 
@@ -97,7 +97,7 @@ public class Node {
 	public const int opt  = 13;  // option: [ ]
 	public const int rslv = 14;  // resolver expr
 
-	public const int normalTrans  = 0;		// transition codes
+	public const int normalTrans  = 0;  // transition codes
 	public const int contextTrans = 1;
 
 	public int      n;			// node number
@@ -200,6 +200,8 @@ public class CharClass {
 
 public class Tab {
 	public Position semDeclPos;       // position of global semantic declarations
+	public Position initCodePos;      // position of initialization code
+	public Position deinitCodePos;    // position of de-initialization (destructor) code
 	public CharSet ignored;           // characters ignored by the scanner
 	public bool explicitEof;          // user must explicitly add EOF in grammar
 	public bool[] ddt = new bool[10]; // debug and test switches
