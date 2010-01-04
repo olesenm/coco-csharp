@@ -91,23 +91,16 @@ public class ParserGen {
 		return nAlts > 5;
 	}
 
-	void CopyFramePart (string stop) {
-		char startCh = stop[0];
-		int endOfStopString = stop.Length-1;
-		int ch = fram.ReadByte();
-		while (ch != EOF)
-			if (ch == startCh) {
-				int i = 0;
-				do {
-					if (i == endOfStopString) return; // stop[0..i] found
-					ch = fram.ReadByte(); i++;
-				} while (ch == stop[i]);
-				// stop[0..i-1] found; continue with last read character
-				gen.Write(stop.Substring(0, i));
-			} else {
-				gen.Write((char)ch); ch = fram.ReadByte();
-			}
-		throw new FatalError("Incomplete or corrupt parser frame file");
+	void CopyFramePart(string stop, bool doOutput) {
+		bool ok = tab.CopyFramePart(fram, gen, stop, doOutput);
+		if (!ok)
+		{
+			throw new FatalError("Incomplete or corrupt parser frame file");
+		}
+	}
+
+	void CopyFramePart(string stop) {
+		CopyFramePart(stop, true);
 	}
 
 	void CopySourcePart (Position pos, int indent) {
@@ -347,7 +340,7 @@ public class ParserGen {
 			foreach (Symbol sym in tab.terminals) {
 				if (s[sym.n]) gen.Write("T,"); else gen.Write("x,");
 				++j;
-				if (j%4 == 0) gen.Write(" ");
+				if (j % 4 == 0) gen.Write(" ");
 			}
 			if (i == symSet.Count-1) gen.WriteLine("x}"); else gen.WriteLine("x},");
 		}
@@ -376,15 +369,14 @@ public class ParserGen {
 		} catch (IOException) {
 			throw new FatalError("Cannot open Parser.frame.");
 		}
+
 		OpenGen(true); /* pdt */
 		err = new StringWriter();
 		foreach (Symbol sym in tab.terminals) GenErrorMsg(tErr, sym);
 
-		CopyFramePart("-->begin");
-		if (!tab.srcName.ToLower().EndsWith("coco-cs.atg")) {
-			gen.Close(); OpenGen(false); /* pdt */
-		}
-		if (usingPos != null) {CopySourcePart(usingPos, 0); gen.WriteLine();}
+		CopyFramePart("-->begin", tab.keepCopyright());
+
+		if (usingPos != null) { CopySourcePart(usingPos, 0); gen.WriteLine(); }
 		CopyFramePart("-->namespace");
 		/* AW open namespace, if it exists */
 		if (tab.nsName != null && tab.nsName.Length > 0) {

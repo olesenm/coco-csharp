@@ -143,7 +143,7 @@ const int id = 0;
 
 
 	void Coco() {
-		Symbol sym; Graph g; string gramName; CharSet s; int beg; 
+		Symbol sym; Graph g; CharSet s; int beg; 
 		if (StartOf(1)) {
 			Get();
 			beg = t.pos; 
@@ -156,7 +156,7 @@ const int id = 0;
 		genScanner = true;
 		tab.ignored = new CharSet(); 
 		Expect(1);
-		gramName = t.val;
+		tab.grammarName = t.val;
 		beg = la.pos;
 		
 		while (StartOf(2)) {
@@ -263,9 +263,9 @@ const int id = 0;
 		}
 		Expect(21);
 		Expect(1);
-		if (gramName != t.val)
+		if (tab.grammarName != t.val)
 		 SemErr("name does not match grammar name");
-		tab.gramSy = tab.FindSym(gramName);
+		tab.gramSy = tab.FindSym(tab.grammarName);
 		if (tab.gramSy == null)
 		  SemErr("missing production for grammar name");
 		else {

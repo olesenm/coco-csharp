@@ -86,7 +86,7 @@ IGNORE cr + lf + tab
 
 PRODUCTIONS
 
-Coco                            (. Symbol sym; Graph g; string gramName; CharSet s; int beg; .)
+Coco                            (. Symbol sym; Graph g; CharSet s; int beg; .)
 =
   [ // using statements
     ANY                          (. beg = t.pos; .)
@@ -95,7 +95,7 @@ Coco                            (. Symbol sym; Graph g; string gramName; CharSet
 
   "COMPILER"                    (. genScanner = true;
                                    tab.ignored = new CharSet(); .)
-  ident                         (. gramName = t.val;
+  ident                         (. tab.grammarName = t.val;
                                    beg = la.pos;
                                  .)
   { ANY }                       (. tab.semDeclPos = new Position(beg, la.pos, 0); .)
@@ -155,9 +155,9 @@ Coco                            (. Symbol sym; Graph g; string gramName; CharSet
                                 WEAK
     '.'
   }
-  "END" ident                   (. if (gramName != t.val)
+  "END" ident                   (. if (tab.grammarName != t.val)
                                      SemErr("name does not match grammar name");
-                                   tab.gramSy = tab.FindSym(gramName);
+                                   tab.gramSy = tab.FindSym(tab.grammarName);
                                    if (tab.gramSy == null)
                                      SemErr("missing production for grammar name");
                                    else {

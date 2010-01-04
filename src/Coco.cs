@@ -116,7 +116,7 @@ public class Coco {
 				return 0;
 			}
 			else if (arg[i][0] == '-') {
-				printUsage("Error: unknown option: '" + arg[i] + "'%ls'");
+				printUsage("Error: unknown option: '" + arg[i] + "'");
 				return 1;
 			}
 			else if (srcName != null) {

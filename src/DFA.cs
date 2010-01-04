@@ -781,23 +781,16 @@ public class DFA {
 		gen.WriteLine("\t}");
 	}
 
+	void CopyFramePart(string stop, bool doOutput) {
+		bool ok = tab.CopyFramePart(fram, gen, stop, doOutput);
+		if (!ok)
+		{
+			throw new FatalError("incomplete or corrupt scanner frame file");
+		}
+	}
+
 	void CopyFramePart(string stop) {
-		char startCh = stop[0];
-		int endOfStopString = stop.Length-1;
-		int ch = fram.ReadByte();
-		while (ch != EOF)
-			if (ch == startCh) {
-				int i = 0;
-				do {
-					if (i == endOfStopString) return; // stop[0..i] found
-					ch = fram.ReadByte(); i++;
-				} while (ch == stop[i]);
-				// stop[0..i-1] found; continue with last read character
-				gen.Write(stop.Substring(0, i));
-			} else {
-				gen.Write((char)ch); ch = fram.ReadByte();
-			}
-		throw new FatalError("incomplete or corrupt scanner frame file");
+		CopyFramePart(stop, true);
 	}
 
 	string SymName(Symbol sym) {
@@ -905,12 +898,11 @@ public class DFA {
 		} catch (FileNotFoundException) {
 			throw new FatalError("Cannot open Scanner.frame.");
 		}
-		OpenGen(true); /* pdt */
+
 		if (dirtyDFA) MakeDeterministic();
-		CopyFramePart("-->begin");
-		if (!tab.srcName.ToLower().EndsWith("coco-cs.atg")) {
-			gen.Close(); OpenGen(false); /* pdt */
-		}
+
+		OpenGen(true); /* pdt */
+		CopyFramePart("-->begin", tab.keepCopyright());
 		CopyFramePart("-->namespace");
 		if (tab.nsName != null && tab.nsName.Length > 0) {
 			gen.WriteLine("namespace {0} {{", tab.nsName);

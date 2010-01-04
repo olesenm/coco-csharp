@@ -211,6 +211,8 @@ public class Tab {
 	public BitArray allSyncSets;      // union of all synchronisation sets
 	public Hashtable literals;        // symbols that are used as literals
 
+	public string grammarName;        // The name of the grammar, set by Coco-cs.atg
+
 	public string srcName;            // name of the atg file (including path)
 	public string srcDir;             // directory path of the atg file
 	public string nsName;             // namespace for generated files
@@ -1243,6 +1245,51 @@ public class Tab {
 			return ((Symbol) x).name.CompareTo(((Symbol) y).name);
 		}
 	}
+
+
+	public bool keepCopyright()
+	{
+		return (grammarName.ToLower() == "coco");
+	}
+
+	public bool CopyFramePart
+	(
+		FileStream istr,
+		StreamWriter ostr,
+		string stop,
+		bool doOutput
+	)
+    {
+		char startCh = stop[0];
+		int endOfStopString = stop.Length-1;
+		int ch = istr.ReadByte();
+		while (ch != -1)  // not EOF
+		{
+			if (ch == startCh) {
+				int i = 0;
+				do {
+					if (i == endOfStopString)
+						return true; // stop[0..i] found
+					ch = istr.ReadByte(); i++;
+				} while (ch == stop[i]);
+				// stop[0..i-1] found; continue with last read character
+				if (doOutput)
+					ostr.Write(stop.Substring(0, i));
+			} else {
+				if (doOutput)
+					ostr.Write((char)ch);
+				ch = istr.ReadByte();
+			}
+		}
+
+		return false;
+	}
+
+	public bool CopyFramePart(FileStream istr, StreamWriter ostr, string stop)
+	{
+		return CopyFramePart(istr, ostr, stop, true);
+	}
+
 
 } // end Tab
 
