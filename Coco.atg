@@ -33,6 +33,7 @@ Coco/R itself) does not fall under the GNU General Public License.
 using System.IO;
 
 COMPILER Coco
+$namespace=at.jku.ssw.Coco   // grammar directive
 
 	const int id = 0;
 	const int str = 1;
@@ -68,6 +69,10 @@ TOKENS
 
 PRAGMAS
 	ddtSym    = '$' { digit | letter }.  (. tab.SetDDT(la.val); .)
+	directive = '$' letter { letter } '='
+        { digit | letter | '-' | '.' | ':' } .
+                                (. tab.DispatchDirective(la.val); .)
+
 
 COMMENTS FROM "/*" TO "*/" NESTED
 COMMENTS FROM "//" TO lf

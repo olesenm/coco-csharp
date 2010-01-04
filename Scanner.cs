@@ -31,6 +31,8 @@ using System.Collections;
 
 namespace at.jku.ssw.Coco {
 
+
+
 public class Token {
 	public int kind;    // token kind
 	public int pos;     // token position in the source text (starting at 0)
@@ -252,22 +254,22 @@ public class Scanner {
 		for (int i = 95; i <= 95; ++i) start[i] = 1;
 		for (int i = 97; i <= 122; ++i) start[i] = 1;
 		for (int i = 48; i <= 57; ++i) start[i] = 2;
-		start[34] = 11; 
+		start[34] = 12; 
 		start[39] = 5; 
-		start[36] = 10; 
-		start[61] = 13; 
-		start[46] = 28; 
-		start[43] = 14; 
-		start[45] = 15; 
-		start[60] = 29; 
-		start[62] = 17; 
-		start[124] = 20; 
-		start[40] = 30; 
-		start[41] = 21; 
-		start[91] = 22; 
-		start[93] = 23; 
-		start[123] = 24; 
-		start[125] = 25; 
+		start[36] = 13; 
+		start[61] = 16; 
+		start[46] = 31; 
+		start[43] = 17; 
+		start[45] = 18; 
+		start[60] = 32; 
+		start[62] = 20; 
+		start[124] = 23; 
+		start[40] = 33; 
+		start[41] = 24; 
+		start[91] = 25; 
+		start[93] = 26; 
+		start[123] = 27; 
+		start[125] = 28; 
 		start[Buffer.EOF] = -1;
 
 	}
@@ -445,54 +447,66 @@ public class Scanner {
 				if (ch >= '0' && ch <= '9' || ch >= 'A' && ch <= 'Z' || ch == '_' || ch >= 'a' && ch <= 'z') {AddCh(); goto case 10;}
 				else {t.kind = 42; break;}
 			case 11:
-				if (ch <= 9 || ch >= 11 && ch <= 12 || ch >= 14 && ch <= '!' || ch >= '#' && ch <= '[' || ch >= ']' && ch <= 65535) {AddCh(); goto case 11;}
+				if (ch >= '-' && ch <= '.' || ch >= '0' && ch <= ':' || ch >= 'A' && ch <= 'Z' || ch == '_' || ch >= 'a' && ch <= 'z') {AddCh(); goto case 11;}
+				else {t.kind = 43; break;}
+			case 12:
+				if (ch <= 9 || ch >= 11 && ch <= 12 || ch >= 14 && ch <= '!' || ch >= '#' && ch <= '[' || ch >= ']' && ch <= 65535) {AddCh(); goto case 12;}
 				else if (ch == 10 || ch == 13) {AddCh(); goto case 4;}
 				else if (ch == '"') {AddCh(); goto case 3;}
-				else if (ch == 92) {AddCh(); goto case 12;}
-				else {t.kind = noSym; break;}
-			case 12:
-				if (ch >= ' ' && ch <= '~') {AddCh(); goto case 11;}
+				else if (ch == 92) {AddCh(); goto case 14;}
 				else {t.kind = noSym; break;}
 			case 13:
-				{t.kind = 17; break;}
+				if (ch >= '0' && ch <= '9') {AddCh(); goto case 10;}
+				else if (ch >= 'A' && ch <= 'Z' || ch == '_' || ch >= 'a' && ch <= 'z') {AddCh(); goto case 15;}
+				else {t.kind = 42; break;}
 			case 14:
-				{t.kind = 20; break;}
+				if (ch >= ' ' && ch <= '~') {AddCh(); goto case 12;}
+				else {t.kind = noSym; break;}
 			case 15:
-				{t.kind = 21; break;}
+				if (ch >= '0' && ch <= '9') {AddCh(); goto case 10;}
+				else if (ch >= 'A' && ch <= 'Z' || ch == '_' || ch >= 'a' && ch <= 'z') {AddCh(); goto case 15;}
+				else if (ch == '=') {AddCh(); goto case 11;}
+				else {t.kind = 42; break;}
 			case 16:
-				{t.kind = 22; break;}
+				{t.kind = 17; break;}
 			case 17:
-				{t.kind = 25; break;}
+				{t.kind = 20; break;}
 			case 18:
-				{t.kind = 26; break;}
+				{t.kind = 21; break;}
 			case 19:
-				{t.kind = 27; break;}
+				{t.kind = 22; break;}
 			case 20:
-				{t.kind = 28; break;}
+				{t.kind = 25; break;}
 			case 21:
-				{t.kind = 31; break;}
+				{t.kind = 26; break;}
 			case 22:
-				{t.kind = 32; break;}
+				{t.kind = 27; break;}
 			case 23:
-				{t.kind = 33; break;}
+				{t.kind = 28; break;}
 			case 24:
-				{t.kind = 34; break;}
+				{t.kind = 31; break;}
 			case 25:
-				{t.kind = 35; break;}
+				{t.kind = 32; break;}
 			case 26:
-				{t.kind = 39; break;}
+				{t.kind = 33; break;}
 			case 27:
-				{t.kind = 40; break;}
+				{t.kind = 34; break;}
 			case 28:
-				if (ch == '.') {AddCh(); goto case 16;}
-				else if (ch == '>') {AddCh(); goto case 19;}
-				else if (ch == ')') {AddCh(); goto case 27;}
-				else {t.kind = 18; break;}
+				{t.kind = 35; break;}
 			case 29:
-				if (ch == '.') {AddCh(); goto case 18;}
-				else {t.kind = 24; break;}
+				{t.kind = 39; break;}
 			case 30:
-				if (ch == '.') {AddCh(); goto case 26;}
+				{t.kind = 40; break;}
+			case 31:
+				if (ch == '.') {AddCh(); goto case 19;}
+				else if (ch == '>') {AddCh(); goto case 22;}
+				else if (ch == ')') {AddCh(); goto case 30;}
+				else {t.kind = 18; break;}
+			case 32:
+				if (ch == '.') {AddCh(); goto case 21;}
+				else {t.kind = 24; break;}
+			case 33:
+				if (ch == '.') {AddCh(); goto case 29;}
 				else {t.kind = 30; break;}
 
 		}
@@ -527,4 +541,4 @@ public class Scanner {
 
 } // end Scanner
 
-}
+} // end namespace

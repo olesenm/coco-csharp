@@ -108,7 +108,6 @@ public class Parser {
 		la.val = "";
 		Get();
 -->parseRoot
-    Expect(0);
 	}
 
 	static readonly bool[,] set = {

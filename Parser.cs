@@ -43,6 +43,7 @@ public class Parser {
 	public const int _char = 5;
 	public const int maxT = 41;
 	public const int _ddtSym = 42;
+	public const int _directive = 43;
 
 	const bool T = true;
 	const bool x = false;
@@ -93,6 +94,9 @@ const int id = 0;
 			if (la.kind <= maxT) { ++errDist; break; }
 				if (la.kind == 42) {
 				tab.SetDDT(la.val); 
+				}
+				if (la.kind == 43) {
+				tab.DispatchDirective(la.val); 
 				}
 
 			la = t;
@@ -699,8 +703,8 @@ const int id = 0;
 		la.val = "";
 		Get();
 		Coco();
+		Expect(0); // expect end-of-file automatically added
 
-    Expect(0);
 	}
 
 	static readonly bool[,] set = {
@@ -821,4 +825,4 @@ public class FatalError: Exception {
 	public FatalError(string m): base(m) {}
 }
 
-}
+} // end namespace
