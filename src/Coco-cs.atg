@@ -35,8 +35,8 @@ using System.IO;
 COMPILER Coco
 $namespace=at.jku.ssw.Coco   // grammar directive
 
-	const int id = 0;
-	const int str = 1;
+	const int isIdent   = 0;
+	const int isLiteral = 1;
 
 	public TextWriter trace;    // other Coco objects referenced in this ATG
 	public Tab tab;
@@ -50,29 +50,29 @@ $namespace=at.jku.ssw.Coco   // grammar directive
 /*-------------------------------------------------------------------------*/
 
 INITIALIZE      // Add to Parser constructor
-	genScanner = false;
+     genScanner = false;
 
 CHARACTERS
-	letter    = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_".
-	digit     = "0123456789".
-	cr        = '\r'.
-	lf        = '\n'.
-	tab       = '\t'.
-	stringCh  = ANY - '"' - '\\' - cr - lf.
-	charCh    = ANY - '\'' - '\\' - cr - lf.
-	printable = '\u0020' .. '\u007e'.
-	hex       = "0123456789abcdef".
+    letter    = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_".
+    digit     = "0123456789".
+    cr        = '\r'.
+    lf        = '\n'.
+    tab       = '\t'.
+    stringCh  = ANY - '"' - '\\' - cr - lf.
+    charCh    = ANY - '\'' - '\\' - cr - lf.
+    printable = '\u0020' .. '\u007e'.
+    hex       = "0123456789abcdef".
 
 TOKENS
-	ident     = letter { letter | digit }.
-	number    = digit { digit }.
-	string    = '"' { stringCh | '\\' printable } '"'.
-	badString = '"' { stringCh | '\\' printable } (cr | lf).
-	char      = '\'' ( charCh | '\\' printable { hex } ) '\''.
+    ident     = letter { letter | digit }.
+    number    = digit { digit }.
+    string    = '"' { stringCh | '\\' printable } '"'.
+    badString = '"' { stringCh | '\\' printable } (cr | lf).
+    char      = '\'' ( charCh | '\\' printable { hex } ) '\''.
 
 PRAGMAS
-	ddtSym    = '$' { digit | letter }.  (. tab.SetDDT(la.val); .)
-	directive = '$' letter { letter } '='
+    ddtSym    = '$' { digit | letter }.  (. tab.SetDDT(la.val); .)
+    directive = '$' letter { letter } '='
         { digit | letter | '-' | '.' | ':' } .
                                 (. tab.DispatchDirective(la.val); .)
 
@@ -132,7 +132,7 @@ Coco                            (. Symbol sym; Graph g; CharSet s; int beg; .)
                                    tab.DeleteNodes();
                                  .)
   { ident                       (. sym = tab.FindSym(t.val);
-                                   bool undef = sym == null;
+                                   bool undef = (sym == null);
                                    if (undef) sym = tab.NewSym(Node.nt, t.val, t.line);
                                    else {
                                      if (sym.typ == Node.nt) {
@@ -140,7 +140,7 @@ Coco                            (. Symbol sym; Graph g; CharSet s; int beg; .)
                                      } else SemErr("this symbol kind not allowed on left side of production");
                                      sym.line = t.line;
                                    }
-                                   bool noAttrs = sym.attrPos == null;
+                                   bool noAttrs = (sym.attrPos == null);
                                    sym.attrPos = null;
                                  .)
     [ AttrDecl<sym> ]           (. if (!undef)
@@ -218,8 +218,8 @@ Set<out CharSet s>              (. CharSet s2; .)
 
 /*------------------------------------------------------------------------------------*/
 
-SimSet<out CharSet s>           (. int n1, n2; .)
-=                               (. s = new CharSet(); .)
+SimSet<out CharSet s>           (. int n1, n2; s = new CharSet(); .)
+=
 ( ident                         (. CharClass c = tab.FindCharClass(t.val);
                                    if (c == null) SemErr("undefined name"); else s.Or(c.set);
                                  .)
@@ -260,7 +260,7 @@ TokenDecl<int typ>              (. string name; int kind; Symbol sym; Graph g; .
                                    tokenString = null;
                                  .)
   SYNC
-  ( '=' TokenExpr<out g> '.'    (. if (kind == str) SemErr("a literal must not be declared with a structure");
+  ( '=' TokenExpr<out g> '.'    (. if (kind == isLiteral) SemErr("a literal must not be declared with a structure");
                                    tab.Finish(g);
                                    if (tokenString == null || tokenString.Equals(noString))
                                      dfa.ConvertToStates(g.l, sym);
@@ -271,7 +271,7 @@ TokenDecl<int typ>              (. string name; int kind; Symbol sym; Graph g; .
                                      dfa.MatchLiteral(tokenString, sym);
                                    }
                                  .)
-  |                             (. if (kind == id) genScanner = false;
+  |                             (. if (kind == isIdent) genScanner = false;
                                    else dfa.MatchLiteral(sym.name, sym);
                                  .)
   )
@@ -337,11 +337,11 @@ Factor<out Graph g>             (. string name; int kind; Position pos; bool wea
 ( [ "WEAK"                      (. weak = true; .)
   ]
   Sym<out name, out kind>       (. Symbol sym = tab.FindSym(name);
-                                   if (sym == null && kind == str)
+                                   if (sym == null && kind == isLiteral)
                                      sym = tab.literals[name] as Symbol;
-                                   bool undef = sym == null;
+                                   bool undef = (sym == null);
                                    if (undef) {
-                                     if (kind == id)
+                                     if (kind == isIdent)
                                        sym = tab.NewSym(Node.nt, name, 0);  // forward nt
                                      else if (genScanner) {
                                        sym = tab.NewSym(Node.t, name, t.line);
@@ -360,7 +360,7 @@ Factor<out Graph g>             (. string name; int kind; Position pos; bool wea
                                    Node p = tab.NewNode(typ, sym, t.line);
                                    g = new Graph(p);
                                  .)
-  [ Attribs<p>                  (. if (kind != id) SemErr("a literal must not have attributes"); .)
+  [ Attribs<p>                  (. if (kind == isLiteral) SemErr("a literal must not have attributes"); .)
   ]                             (. if (undef)
                                      sym.attrPos = p.pos;  // dummy
                                    else if ((p.pos == null) != (sym.attrPos == null))
@@ -417,7 +417,8 @@ TokenTerm<out Graph g>          (. Graph g2; .)
   { TokenFactor<out g2>         (. tab.MakeSequence(g, g2); .)
   }
   [ "CONTEXT"
-    '(' TokenExpr<out g2>       (. tab.SetContextTrans(g2.l); dfa.hasCtxMoves = true;
+    '(' TokenExpr<out g2>       (. tab.SetContextTrans(g2.l);
+                                   dfa.hasCtxMoves = true;
                                    tab.MakeSequence(g, g2); .)
     ')'
   ]
@@ -425,10 +426,9 @@ TokenTerm<out Graph g>          (. Graph g2; .)
 
 /*------------------------------------------------------------------------------------*/
 
-TokenFactor<out Graph g>        (. string name; int kind; .)
+TokenFactor<out Graph g>        (. string name; int kind; g = null; .)
 =
-                                (. g = null; .)
-( Sym<out name, out kind>       (. if (kind == id) {
+( Sym<out name, out kind>       (. if (kind == isIdent) {
                                      CharClass c = tab.FindCharClass(name);
                                      if (c == null) {
                                        SemErr("undefined name");
@@ -453,11 +453,11 @@ TokenFactor<out Graph g>        (. string name; int kind; .)
 /*------------------------------------------------------------------------------------*/
 
 Sym<out string name, out int kind>
-=                               (. name = "???"; kind = id; .)
-( ident                         (. kind = id; name = t.val; .)
+=                               (. name = "???"; kind = isIdent; .)
+( ident                         (. kind = isIdent; name = t.val; .)
 | (string                       (. name = t.val; .)
   | char                        (. name = "\"" + t.val.Substring(1, t.val.Length-2) + "\""; .)
-  )                             (. kind = str;
+  )                             (. kind = isLiteral;
                                    if (dfa.ignoreCase) name = name.ToLower();
                                    if (name.IndexOf(' ') >= 0)
                                      SemErr("literal tokens must not contain blanks"); .)
@@ -491,5 +491,7 @@ SemText<out Position pos>
   }
   ".)"                          (. pos = new Position(beg, t.pos, col); .)
 .
+
+/*------------------------------------------------------------------------------------*/
 
 END Coco.

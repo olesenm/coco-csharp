@@ -56,8 +56,8 @@ public class Parser {
 	public Token la;   // lookahead token
 	int errDist = minErrDist;
 
-const int id = 0;
-	const int str = 1;
+const int isIdent   = 0;
+	const int isLiteral = 1;
 
 	public TextWriter trace;    // other Coco objects referenced in this ATG
 	public Tab tab;
@@ -233,7 +233,7 @@ const int id = 0;
 		while (la.kind == 1) {
 			Get();
 			sym = tab.FindSym(t.val);
-			bool undef = sym == null;
+			bool undef = (sym == null);
 			if (undef) sym = tab.NewSym(Node.nt, t.val, t.line);
 			else {
 			  if (sym.typ == Node.nt) {
@@ -241,7 +241,7 @@ const int id = 0;
 			  } else SemErr("this symbol kind not allowed on left side of production");
 			  sym.line = t.line;
 			}
-			bool noAttrs = sym.attrPos == null;
+			bool noAttrs = (sym.attrPos == null);
 			sym.attrPos = null;
 			
 			if (la.kind == 26 || la.kind == 28) {
@@ -331,7 +331,7 @@ const int id = 0;
 			Get();
 			TokenExpr(out g);
 			Expect(20);
-			if (kind == str) SemErr("a literal must not be declared with a structure");
+			if (kind == isLiteral) SemErr("a literal must not be declared with a structure");
 			tab.Finish(g);
 			if (tokenString == null || tokenString.Equals(noString))
 			  dfa.ConvertToStates(g.l, sym);
@@ -343,7 +343,7 @@ const int id = 0;
 			}
 			
 		} else if (StartOf(8)) {
-			if (kind == id) genScanner = false;
+			if (kind == isIdent) genScanner = false;
 			else dfa.MatchLiteral(sym.name, sym);
 			
 		} else SynErr(46);
@@ -444,8 +444,7 @@ const int id = 0;
 	}
 
 	void SimSet(out CharSet s) {
-		int n1, n2; 
-		s = new CharSet(); 
+		int n1, n2; s = new CharSet(); 
 		if (la.kind == 1) {
 			Get();
 			CharClass c = tab.FindCharClass(t.val);
@@ -483,10 +482,10 @@ const int id = 0;
 	}
 
 	void Sym(out string name, out int kind) {
-		name = "???"; kind = id; 
+		name = "???"; kind = isIdent; 
 		if (la.kind == 1) {
 			Get();
-			kind = id; name = t.val; 
+			kind = isIdent; name = t.val; 
 		} else if (la.kind == 3 || la.kind == 5) {
 			if (la.kind == 3) {
 				Get();
@@ -495,7 +494,7 @@ const int id = 0;
 				Get();
 				name = "\"" + t.val.Substring(1, t.val.Length-2) + "\""; 
 			}
-			kind = str;
+			kind = isLiteral;
 			if (dfa.ignoreCase) name = name.ToLower();
 			if (name.IndexOf(' ') >= 0)
 			  SemErr("literal tokens must not contain blanks"); 
@@ -546,11 +545,11 @@ const int id = 0;
 			}
 			Sym(out name, out kind);
 			Symbol sym = tab.FindSym(name);
-			if (sym == null && kind == str)
+			if (sym == null && kind == isLiteral)
 			  sym = tab.literals[name] as Symbol;
-			bool undef = sym == null;
+			bool undef = (sym == null);
 			if (undef) {
-			  if (kind == id)
+			  if (kind == isIdent)
 			    sym = tab.NewSym(Node.nt, name, 0);  // forward nt
 			  else if (genScanner) {
 			    sym = tab.NewSym(Node.t, name, t.line);
@@ -571,7 +570,7 @@ const int id = 0;
 			
 			if (la.kind == 26 || la.kind == 28) {
 				Attribs(p);
-				if (kind != id) SemErr("a literal must not have attributes"); 
+				if (kind == isLiteral) SemErr("a literal must not have attributes"); 
 			}
 			if (undef)
 			 sym.attrPos = p.pos;  // dummy
@@ -682,18 +681,18 @@ const int id = 0;
 			Get();
 			Expect(32);
 			TokenExpr(out g2);
-			tab.SetContextTrans(g2.l); dfa.hasCtxMoves = true;
+			tab.SetContextTrans(g2.l);
+			dfa.hasCtxMoves = true;
 			tab.MakeSequence(g, g2); 
 			Expect(33);
 		}
 	}
 
 	void TokenFactor(out Graph g) {
-		string name; int kind; 
-		g = null; 
+		string name; int kind; g = null; 
 		if (la.kind == 1 || la.kind == 3 || la.kind == 5) {
 			Sym(out name, out kind);
-			if (kind == id) {
+			if (kind == isIdent) {
 			 CharClass c = tab.FindCharClass(name);
 			 if (c == null) {
 			   SemErr("undefined name");
