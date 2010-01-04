@@ -1,7 +1,8 @@
 # -*- sh -*-
 
-# C-Sharp compiler
-CSC = @MCS@
+# C-Sharp compiler and runtime
+CSC  = @MCS@
+MONO = @MONO@
 
 #---------------------------------------------------------------------------
 # Installation information.
