@@ -1,0 +1,58 @@
+# -*- sh -*-
+
+# This is a UNIX-only makefile for autoconf
+# -----------------------------------------------------------------------------
+
+all: Coco
+
+Coco: makefiles
+	cd src && $(MAKE) all
+
+Makefile: configure autoconf/Makefile.in
+	@echo "Makefile is older than the configure script".
+	@echo "Please re-run the configure script."
+	@exit 1
+
+src/Makefile: configure src/Makefile.in
+	@echo "src/Makefile is older than its dependencies".
+	@echo "Please re-run the configure script."
+	@exit 1
+
+makefiles: Makefile src/Makefile
+
+doc:
+	@echo "create doxygen documentation"
+	@echo
+	doxygen
+
+clean:
+	/bin/rm -f *~
+	cd src && $(MAKE) clean
+
+docclean:
+	@echo "remove doxygen documentation"
+	@echo
+	/bin/rm -f html/*
+
+distclean: docclean
+	/bin/rm -f *~ Coco.net Makefile config.status config.log config.cache
+	cd src && $(MAKE) distclean
+
+install: makefiles
+	cd src && $(MAKE) install
+
+
+configure: autoconf/configure.ac
+	( cd autoconf && autoconf && mv ./configure ..; rm -rf autom4te.cache )
+
+update: autoconf/config.sub autoconf/config.guess
+
+autoconf/config.guess: /usr/share/misc/config.guess
+	/bin/cp -f /usr/share/misc/config.guess autoconf/config.guess
+
+autoconf/config.sub: /usr/share/misc/config.sub
+	/bin/cp -f /usr/share/misc/config.sub autoconf/config.sub
+
+.PHONY: Coco all clean docclean distclean install makefiles
+
+# -----------------------------------------------------------------------------

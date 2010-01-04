@@ -1,0 +1,84 @@
+# -*- sh -*-
+
+# C-Sharp compiler
+CSC = @MCS@
+
+#---------------------------------------------------------------------------
+# Installation information.
+#---------------------------------------------------------------------------
+bindir = @bindir@
+builddir = @builddir@
+datadir = @datadir@
+datarootdir = @datarootdir@
+docdir = @docdir@
+exec_prefix = @exec_prefix@
+libdir = @libdir@
+htmldir = @htmldir@
+includedir = @includedir@
+prefix = @prefix@
+srcdir = @srcdir@
+
+INSTALL      = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+DATA_FILES = $(srcdir)/Parser.frame $(srcdir)/Scanner.frame
+DOC_FILES  = $(srcdir)/Coco.atg
+DATA_DIR   = $(datarootdir)/coco-cs
+LIB_COCO   = $(libdir)/coco-cs
+
+COCO = ../Coco.net
+WRAPPER = coco-cs
+
+# -----------------------------------------------------------------------------
+# There should be no need to modify anything below here.
+# -----------------------------------------------------------------------------
+
+all: $(COCO) $(WRAPPER)
+
+$(COCO): *.cs
+	$(CSC) -out:$@ $(CSFLAGS) $^
+
+$(WRAPPER): $(WRAPPER).in Makefile
+	sed -e "s|\@LIB_COCO\@|$(LIB_COCO)|g" < $< > $@
+	chmod +x $@
+
+# -----------------------------------------------------------------------------
+
+clean:
+	/bin/rm -f *~ \#*
+
+distclean: clean
+	/bin/rm -rf Makefile $(WRAPPER) $(srcdir)/*.bak
+
+install_bin_directories:
+	mkdir -p $(bindir)
+
+install_lib_directories:
+	mkdir -p $(LIB_COCO)
+
+install_data_directories:
+	mkdir -p $(DATA_DIR)
+
+install_bin: install_bin_directories
+	$(INSTALL) $(WRAPPER) $(bindir)/
+
+install_lib: install_lib_directories
+	$(INSTALL) $(COCO) $(LIB_COCO)/
+
+install_data: install_data_directories
+	@for i in $(DATA_FILES); \
+	do \
+		echo $(INSTALL_DATA) $$i $(DATA_DIR)/; \
+		$(INSTALL_DATA) $$i $(DATA_DIR)/; \
+		if [ "$$?" != "0" ]; then \
+		  exit 1; \
+		fi; \
+	done
+
+install: all install_bin install_lib install_data
+
+.PHONY: all \
+    install_bin install_bin_directories \
+    install_lib install_lib_directories \
+    install_data install_bin_directories
+
+# -----------------------------------------------------------------------------

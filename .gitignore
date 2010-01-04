@@ -34,6 +34,15 @@ core
 # ignore Doxygen docs
 /html
 
+# ignore autoconf files
+/Makefile
+/config.log
+/config.status
+/src/Makefile
+/src/coco-cs
+
+autom4te.cache
+
 # source packages - anywhere
 *.tar.bz2
 *.tar.gz
