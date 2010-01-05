@@ -36,11 +36,12 @@ namespace at.jku.ssw.Coco {
 //  State
 //-----------------------------------------------------------------------------
 
-public class State {            // state of finite automaton
-	public int nr;              // state number
-	public Action firstAction;  // to first action of this state
-	public Symbol endOf;        // recognized token if state is final
-	public bool ctx;            // true if state is reached via contextTrans
+//! state of finite automaton
+public class State {
+	public int nr;              //!< state number
+	public Action firstAction;  //!< to first action of this state
+	public Symbol endOf;        //!< recognized token if state is final
+	public bool ctx;            //!< true if state is reached via contextTrans
 	public State next;
 
 	public void AddAction(Action act) {
@@ -72,11 +73,12 @@ public class State {            // state of finite automaton
 //  Action
 //-----------------------------------------------------------------------------
 
-public class Action {           // action of finite automaton
-	public int typ;             // type of action symbol: clas, chr
-	public int sym;             // action symbol
-	public int tc;              // transition code: normalTrans, contextTrans
-	public Target target;       // states reached from this action
+//! action of finite automaton
+public class Action {
+	public int typ;             //!< type of action symbol: clas, chr
+	public int sym;             //!< action symbol
+	public int tc;              //!< transition code: normalTrans, contextTrans
+	public Target target;       //!< states reached from this action
 	public Action next;
 
 	public Action(int typ, int sym, int tc) {
@@ -128,8 +130,9 @@ public class Action {           // action of finite automaton
 //  Target
 //-----------------------------------------------------------------------------
 
-public class Target {           // set of states that are reached by an action
-	public State state;         // target state
+//! set of states that are reached by an action
+public class Target {
+	public State state;         //!< target state
 	public Target next;
 
 	public Target (State s) {
@@ -141,9 +144,10 @@ public class Target {           // set of states that are reached by an action
 //  Melted
 //-----------------------------------------------------------------------------
 
-public class Melted {           // info about melted states
-	public BitArray set;        // set of old states
-	public State state;         // new state
+//!< info about melted states
+public class Melted {
+	public BitArray set;        //!< set of old states
+	public State state;         //!< new state
 	public Melted next;
 
 	public Melted(BitArray set, State state) {
@@ -155,7 +159,8 @@ public class Melted {           // info about melted states
 //  Comment
 //-----------------------------------------------------------------------------
 
-public class Comment {          // info about comment syntax
+//! info about comment syntax
+public class Comment {
 	public string start;
 	public string stop;
 	public bool nested;
@@ -285,26 +290,23 @@ public class CharSet {
 //-----------------------------------------------------------------------------
 
 public class DFA {
-	public const int  EOF = -1;
-
 	private int maxStates;
-	private int lastStateNr;   // highest state number
+	private int lastStateNr;   //!< highest state number
 	private State firstState;
-	private State lastState;   // last allocated state
-	private int lastSimState;  // last non melted state
-	private FileStream fram;   // scanner frame input
-	private StreamWriter gen;  // generated scanner file
-	private Symbol curSy;      // current token to be recognized (in FindTrans)
-	private bool dirtyDFA;     // DFA may become nondeterministic in MatchLiteral
+	private State lastState;   //!< last allocated state
+	private int lastSimState;  //!< last non melted state
+	private FileStream fram;   //!< scanner frame input
+	private StreamWriter gen;  //!< generated scanner file
+	private Symbol curSy;      //!< current token to be recognized (in FindTrans)
+	private bool dirtyDFA;     //!< DFA may become nondeterministic in MatchLiteral
 
-	public bool ignoreCase;   // true if input should be treated case-insensitively
-	public bool hasCtxMoves;  // DFA has context transitions
+	public bool ignoreCase;    //!< true if input should be treated case-insensitively
+	public bool hasCtxMoves;   //!< DFA has context transitions
 
 	// other Coco objects
 	private Parser     parser;
 	private Tab        tab;
 	private Errors     errors;
-	private TextWriter trace;
 
 	//---------- Output primitives
 	private string Ch(int ch) {
@@ -613,6 +615,8 @@ public class DFA {
 	}
 
 	public void PrintStates() {
+		TextWriter trace = tab.trace;
+
 		trace.WriteLine();
 		trace.WriteLine("---------- states ----------");
 		for (State state = firstState; state != null; state = state.next) {
@@ -876,10 +880,10 @@ public class DFA {
 		gen.WriteLine("\t\tstart[Buffer.EOF] = -1;");
 	}
 
-	void OpenGen(bool backUp) { /* pdt */
+	void OpenGen() {
 		try {
 			string fn = Path.Combine(tab.outDir, "Scanner.cs"); /* pdt */
-			if (File.Exists(fn) && backUp) File.Copy(fn, fn + ".old", true);
+			if (tab.makeBackup && File.Exists(fn)) File.Copy(fn, fn + ".bak", true);
 			gen = new StreamWriter(new FileStream(fn, FileMode.Create)); /* pdt */
 		} catch (IOException) {
 			throw new FatalError("Cannot generate scanner file");
@@ -901,15 +905,16 @@ public class DFA {
 
 		if (dirtyDFA) MakeDeterministic();
 
-		OpenGen(true); /* pdt */
+		OpenGen();
 		CopyFramePart("-->begin", tab.keepCopyright());
+
 		CopyFramePart("-->namespace");
 		if (tab.nsName != null && tab.nsName.Length > 0) {
 			gen.WriteLine("namespace {0} {{", tab.nsName);
 			gen.WriteLine();
 		}
 		CopyFramePart("-->declarations");
-		gen.WriteLine("\tconst int maxT = {0};", tab.terminals.Count - 1);
+		gen.WriteLine("\tconst int maxT = {0};", tab.terminals.Count-1);
 		gen.WriteLine("\tconst int noSym = {0};", tab.noSym.n);
 		if (ignoreCase)
 			gen.Write("\tchar valCh;       // current input character (for token.val)");
@@ -960,10 +965,12 @@ public class DFA {
 		this.parser = parser;
 		tab = parser.tab;
 		errors = parser.errors;
-		trace = parser.trace;
-		firstState = null; lastState = null; lastStateNr = -1;
+		firstState = null;
+		lastState = null;
+		lastStateNr = -1;
 		firstState = NewState();
-		firstMelted = null; firstComment = null;
+		firstMelted = null;
+		firstComment = null;
 		ignoreCase = false;
 		dirtyDFA = false;
 		hasCtxMoves = false;

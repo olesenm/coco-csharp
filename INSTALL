@@ -1,0 +1,14 @@
+-*- text -*-
+
+For windows users, the *.bat files can be used directly (perhaps with
+some modification) and the src/Coco.csproj can also be used.
+
+For Unix users, the build*.sh files can be used directly, or the GNU
+autoconfig can be used. Using autoconfig is recommended when packaging
+Coco/R in standard locations.
+
+   configure
+   make
+   make install
+
+See configure -help for more information.

@@ -38,8 +38,7 @@ $namespace=at.jku.ssw.Coco   // grammar directive
 	const int isIdent   = 0;
 	const int isLiteral = 1;
 
-	public TextWriter trace;    // other Coco objects referenced in this ATG
-	public Tab tab;
+	public Tab tab;             // other Coco objects referenced in this ATG
 	public DFA dfa;
 	public ParserGen pgen;
 
@@ -90,7 +89,7 @@ Coco                            (. Symbol sym; Graph g; CharSet s; int beg; .)
 =
   [ // using statements
     ANY                          (. beg = t.pos; .)
-    { ANY }                      (. pgen.usingPos = new Position(beg, la.pos, 0); .)
+    { ANY }                      (. pgen.preamblePos = new Position(beg, la.pos, 0); .)
   ]
 
   "COMPILER"                    (. genScanner = true;
@@ -98,19 +97,19 @@ Coco                            (. Symbol sym; Graph g; CharSet s; int beg; .)
   ident                         (. tab.grammarName = t.val;
                                    beg = la.pos;
                                  .)
-  { ANY }                       (. tab.semDeclPos = new Position(beg, la.pos, 0); .)
+  { ANY }                       (. pgen.semDeclPos = new Position(beg, la.pos, 0); .)
 
   // this section can be used to add code to the constructor
   [ "INITIALIZE"
     [ ANY                       (. beg = t.pos; .)
-      { ANY }                   (. tab.initCodePos = new Position(beg, la.pos, 0); .)
+      { ANY }                   (. pgen.initCodePos = new Position(beg, la.pos, 0); .)
     ]
   ]
 
   // this section can be used to add code to the destructor
   [ "DESTROY"
     [ ANY                       (. beg = t.pos; .)
-      { ANY }                   (. tab.deinitCodePos = new Position(beg, la.pos, 0); .)
+      { ANY }                   (. pgen.deinitCodePos = new Position(beg, la.pos, 0); .)
     ]
   ]
 
@@ -183,7 +182,8 @@ Coco                            (. Symbol sym; Graph g; CharSet s; int beg; .)
                                        }
                                        Console.WriteLine(" generated");
                                        if (tab.ddt[8]) {
-                                         pgen.WriteStatistics();
+                                         tab.PrintStatistics();
+                                         pgen.PrintStatistics();
                                        }
                                      }
                                    }

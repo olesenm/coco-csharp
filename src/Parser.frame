@@ -38,8 +38,8 @@ public class Parser {
 	public Scanner scanner;
 	public Errors  errors;
 
-	public Token t;    // last recognized token
-	public Token la;   // lookahead token
+	public Token t;    //!< last recognized token
+	public Token la;   //!< lookahead token
 	int errDist = minErrDist;
 
 -->declarations

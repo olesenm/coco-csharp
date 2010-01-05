@@ -57,7 +57,9 @@ public class Coco {
 			"  -namespace <Name>      eg, My.Name.Space{0}" +
 			"  -frames    <Dir>       for frames not in the source directory{0}" +
 			"  -trace     <String>    trace with output to trace.txt{0}" +
+			"  -trace2    <String>    trace with output on stderr{0}" +
 			"  -o         <Dir>       output directory{0}" +
+			"  -bak                   save existing Parser/Scanner files as .bak{0}" +
 			"  -help                  print this usage{0}" +
 			"{0}Valid characters in the trace string:{0}" +
 			"  A  trace automaton{0}" +
@@ -78,50 +80,63 @@ public class Coco {
 
 	public static int Main (string[] arg) {
 		Console.WriteLine("Coco/R C# (04 Jan 2010)");
-		string srcName = null, nsName = null, frameDir = null, ddtString = null,
-		traceFileName = null, outDir = null;
+		string srcName = null, nsName = null, frameDir = null, ddtString = null, outDir = null;
+		bool makeBackup = false;
+		bool traceToFile = true;
 		int retVal = 1;
 
 		for (int i = 0; i < arg.Length; i++) {
-			if (arg[i] == "-namespace") {
+			if (arg[i] == "-help") {
+				printUsage(null);
+				return 0;
+			}
+			else if (arg[i] == "-namespace") {
 				if (++i == arg.Length) {
 					printUsage("missing parameter on -namespace");
-					return 1;
+					return retVal;
 				}
 				nsName = arg[i];
 			}
 			else if (arg[i] == "-frames") {
 				if (++i == arg.Length) {
 					printUsage("missing parameter on -frames");
-					return 1;
+					return retVal;
 				}
 				frameDir = arg[i];
 			}
 			else if (arg[i] == "-trace") {
 				if (++i == arg.Length) {
 					printUsage("missing parameter on -trace");
-					return 1;
+					return retVal;
 				}
+				traceToFile = true;
+				ddtString = arg[i];
+			}
+			else if (arg[i] == "-trace2") {
+				if (++i == arg.Length) {
+					printUsage("missing parameter on -trace2");
+					return retVal;
+				}
+				traceToFile = false;
 				ddtString = arg[i];
 			}
 			else if (arg[i] == "-o") {
 				if (++i == arg.Length) {
 					printUsage("missing parameter on -o");
-					return 1;
+					return retVal;
 				}
 				outDir = arg[i];
 			}
-			else if (arg[i] == "-help") {
-				printUsage(null);
-				return 0;
+			else if (arg[i] == "-bak") {
+				makeBackup = true;
 			}
 			else if (arg[i][0] == '-') {
 				printUsage("Error: unknown option: '" + arg[i] + "'");
-				return 1;
+				return retVal;
 			}
 			else if (srcName != null) {
 				printUsage("grammar can only be specified once");
-				return 1;
+				return retVal;
 			}
 			else {
 				srcName = arg[i];
@@ -129,31 +144,37 @@ public class Coco {
 		}
 
 		if (srcName != null) {
+			string traceFileName = null;
 			try {
 				string srcDir = Path.GetDirectoryName(srcName);
 
 				Scanner scanner = new Scanner(srcName);
-				Parser parser = new Parser(scanner);
+				Parser parser   = new Parser(scanner);
+				parser.tab      = new Tab(parser);
 
-				traceFileName = Path.Combine(srcDir, "trace.txt");
-				parser.trace = new StreamWriter(new FileStream(traceFileName, FileMode.Create));
-				parser.tab = new Tab(parser);
+				parser.tab.srcName  = srcName;
+				parser.tab.srcDir   = srcDir;
+				parser.tab.nsName   = nsName;
+				parser.tab.frameDir = frameDir;
+				parser.tab.outDir   = (outDir != null) ? outDir : srcDir;
+				parser.tab.SetDDT(ddtString);
+				parser.tab.makeBackup = makeBackup;
+
+				if (traceToFile) {
+					traceFileName = Path.Combine(parser.tab.outDir, "trace.txt");
+					parser.tab.trace = new StreamWriter(new FileStream(traceFileName, FileMode.Create));
+				}
 				parser.dfa = new DFA(parser);
 				parser.pgen = new ParserGen(parser);
 
-				parser.tab.srcName = srcName;
-				parser.tab.srcDir = srcDir;
-				parser.tab.nsName = nsName;
-				parser.tab.frameDir = frameDir;
-				parser.tab.outDir = (outDir != null) ? outDir : srcDir;
-				if (ddtString != null) parser.tab.SetDDT(ddtString);
-
 				parser.Parse();
 
-				parser.trace.Close();
-				FileInfo f = new FileInfo(traceFileName);
-				if (f.Length == 0) f.Delete();
-				else Console.WriteLine("trace output is in " + traceFileName);
+				if (traceToFile) {
+					parser.tab.trace.Close();
+					FileInfo f = new FileInfo(traceFileName);
+					if (f.Length == 0) f.Delete();
+					else Console.WriteLine("trace output is in " + traceFileName);
+				}
 				Console.WriteLine("{0} errors detected", parser.errors.count);
 				if (parser.errors.count == 0) { retVal = 0; }
 			} catch (IOException) {

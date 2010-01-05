@@ -32,10 +32,11 @@ using System.Collections;
 
 namespace at.jku.ssw.Coco {
 
-public class Position {  // position of source code stretch (e.g. semantic action, resolver expressions)
-	public int beg;      // start relative to the beginning of the file
-	public int end;      // end of stretch
-	public int col;      // column number of start position
+//! position of source code stretch (e.g. semantic action, resolver expressions)
+public class Position {
+	public int beg;    //!< start relative to the beginning of the file
+	public int end;    //!< end of stretch
+	public int col;    //!< column number of start position
 
 	public Position(int beg, int end, int col) {
 		this.beg = beg; this.end = end; this.col = col;
@@ -48,27 +49,26 @@ public class Position {  // position of source code stretch (e.g. semantic actio
 //=====================================================================
 
 public class Symbol {
-
 	// token kinds
-	public const int fixedToken    = 0; // e.g. 'a' ('b' | 'c') (structure of literals)
-	public const int classToken    = 1; // e.g. digit {digit}   (at least one char class)
-	public const int litToken      = 2; // e.g. "while"
-	public const int classLitToken = 3; // e.g. letter {letter} but without literals that have the same structure
+	public const int fixedToken    = 0; //!< e.g. 'a' ('b' | 'c') (structure of literals)
+	public const int classToken    = 1; //!< e.g. digit {digit}   (at least one char class)
+	public const int litToken      = 2; //!< e.g. "while"
+	public const int classLitToken = 3; //!< e.g. letter {letter} but without literals that have the same structure
 
-	public int      n;           // symbol number
-	public int      typ;         // t, nt, pr, unknown, rslv /* ML 29_11_2002 slv added */ /* AW slv --> rslv */
-	public string   name;        // symbol name
-	public Node     graph;       // nt: to first node of syntax graph
-	public int      tokenKind;   // t:  token kind (fixedToken, classToken, ...)
-	public bool     deletable;   // nt: true if nonterminal is deletable
-	public bool     firstReady;  // nt: true if terminal start symbols have already been computed
-	public BitArray first;       // nt: terminal start symbols
-	public BitArray follow;      // nt: terminal followers
-	public BitArray nts;         // nt: nonterminals whose followers have to be added to this sym
-	public int      line;        // source text line number of item in this node
-	public Position attrPos;     // nt: position of attributes in source text (or null)
-	public Position semPos;      // pr: pos of semantic action in source text (or null)
-	                             // nt: pos of local declarations in source text (or null)
+	public int      n;           //!< symbol number
+	public int      typ;         //!< t, nt, pr, unknown, rslv /* ML 29_11_2002 slv added */ /* AW slv --> rslv */
+	public string   name;        //!< symbol name
+	public Node     graph;       //!< nt: to first node of syntax graph
+	public int      tokenKind;   //!< t:  token kind (fixedToken, classToken, ...)
+	public bool     deletable;   //!< nt: true if nonterminal is deletable
+	public bool     firstReady;  //!< nt: true if terminal start symbols have already been computed
+	public BitArray first;       //!< nt: terminal start symbols
+	public BitArray follow;      //!< nt: terminal followers
+	public BitArray nts;         //!< nt: nonterminals whose followers have to be added to this sym
+	public int      line;        //!< source text line number of item in this node
+	public Position attrPos;     //!< nt: position of attributes in source text (or null)
+	public Position semPos;      //!< pr: pos of semantic action in source text (or null)
+	                             //!< nt: pos of local declarations in source text (or null)
 
 	public Symbol(int typ, string name, int line) {
 		this.typ = typ; this.name = name; this.line = line;
@@ -82,41 +82,43 @@ public class Symbol {
 
 public class Node {
 	// constants for node kinds
-	public const int t    =  1;  // terminal symbol
-	public const int pr   =  2;  // pragma
-	public const int nt   =  3;  // nonterminal symbol
-	public const int clas =  4;  // character class
-	public const int chr  =  5;  // character
-	public const int wt   =  6;  // weak terminal symbol
+	public const int t    =  1;  //!< terminal symbol
+	public const int pr   =  2;  //!< pragma
+	public const int nt   =  3;  //!< nonterminal symbol
+	public const int clas =  4;  //!< character class
+	public const int chr  =  5;  //!< character
+	public const int wt   =  6;  //!< weak terminal symbol
 	public const int any  =  7;  //
-	public const int eps  =  8;  // empty
-	public const int sync =  9;  // synchronization symbol
-	public const int sem  = 10;  // semantic action: (. .)
-	public const int alt  = 11;  // alternative: |
-	public const int iter = 12;  // iteration: { }
-	public const int opt  = 13;  // option: [ ]
-	public const int rslv = 14;  // resolver expr
+	public const int eps  =  8;  //!< empty
+	public const int sync =  9;  //!< synchronization symbol
+	public const int sem  = 10;  //!< semantic action: (. .)
+	public const int alt  = 11;  //!< alternative: |
+	public const int iter = 12;  //!< iteration: { }
+	public const int opt  = 13;  //!< option: [ ]
+	public const int rslv = 14;  //!< resolver expr
 
-	public const int normalTrans  = 0;  // transition codes
+	public const int normalTrans  = 0;  //!< transition codes
 	public const int contextTrans = 1;
 
-	public int      n;			// node number
-	public int      typ;		// t, nt, wt, chr, clas, any, eps, sem, sync, alt, iter, opt, rslv
-	public Node     next;		// to successor node
-	public Node     down;		// alt: to next alternative
-	public Node     sub;		// alt, iter, opt: to first node of substructure
-	public bool     up;			// true: "next" leads to successor in enclosing structure
-	public Symbol   sym;		// nt, t, wt: symbol represented by this node
-	public int      val;		// chr:  ordinal character value
-													// clas: index of character class
-	public int      code;		// chr, clas: transition code
-	public BitArray set;		// any, sync: the set represented by this node
-	public Position pos;		// nt, t, wt: pos of actual attributes
-	                            // sem:       pos of semantic action in source text
-	                            // rslv:       pos of resolver in source text
-	public int      line;		// source text line number of item in this node
-	public State    state;	// DFA state corresponding to this node
-													// (only used in DFA.ConvertToStates)
+	public int      n;       //!< node number
+	public int      typ;     //!< t, nt, wt, chr, clas, any, eps, sem, sync, alt, iter, opt, rslv
+	public Symbol   sym;     //!< nt, t, wt: symbol represented by this node
+	public int      val;     //!< chr:  ordinal character value
+	                         //!< clas: index of character class
+	public int      code;    //!< chr, clas: transition code
+	public int      line;    //!< source text line number of item in this node
+
+	public BitArray set;     //!< any, sync: the set represented by this node
+	public Position pos;     //!< nt, t, wt: pos of actual attributes
+	                         //!< sem: pos of semantic action in source text
+	                         //!< rslv: pos of resolver in source text
+	public State    state;   //!< DFA state corresponding to this node
+	                         //!< (only used in DFA.ConvertToStates)
+
+	public bool     up;      //!< true: "next" leads to successor in enclosing structure
+	public Node     next;    //!< to successor node
+	public Node     down;    //!< alt: to next alternative
+	public Node     sub;     //!< alt, iter, opt: to first node of substructure
 
 	public Node(int typ, Symbol sym, int line) {
 		this.typ = typ; this.sym = sym; this.line = line;
@@ -128,8 +130,8 @@ public class Node {
 //=====================================================================
 
 public class Graph {
-	public Node l;	// left end of graph = head
-	public Node r;	// right end of graph = list of nodes to be linked to successor graph
+	public Node l;   //!< left end of graph = head
+	public Node r;   //!< right end of graph = list of nodes to be linked to successor graph
 
 	public Graph() {
 		l = null; r = null;
@@ -184,9 +186,9 @@ public class Sets {
 //=====================================================================
 
 public class CharClass {
-	public int n;       	// class number
-	public string name;		// class name
-	public CharSet set;	// set representing the class
+	public int n;           //!< class number
+	public string name;     //!< class name
+	public CharSet set;     //!< set representing the class
 
 	public CharClass(string name, CharSet s) {
 		this.name = name; this.set = s;
@@ -199,37 +201,34 @@ public class CharClass {
 //=====================================================================
 
 public class Tab {
-	public Position semDeclPos;       // position of global semantic declarations
-	public Position initCodePos;      // position of initialization code
-	public Position deinitCodePos;    // position of de-initialization (destructor) code
-	public CharSet ignored;           // characters ignored by the scanner
-	public bool explicitEof;          // user must explicitly add EOF in grammar
-	public bool[] ddt = new bool[10]; // debug and test switches
-	public Symbol gramSy;             // root nonterminal; filled by ATG
-	public Symbol eofSy;              // end of file symbol
-	public Symbol noSym;              // used in case of an error
-	public BitArray allSyncSets;      // union of all synchronisation sets
-	public Hashtable literals;        // symbols that are used as literals
+	public bool explicitEof = false;  //!< user must explicitly add EOF in grammar
+	public bool makeBackup  = false;  //!< create .bak files for generated parser/scanner
+	public bool[] ddt = new bool[10]; //!< debug and test switches
 
-	public string grammarName;        // The name of the grammar, set by Coco-cs.atg
+	public CharSet ignored;           //!< characters ignored by the scanner
+	public Symbol gramSy;             //!< root nonterminal; filled by ATG
+	public Symbol eofSy;              //!< end of file symbol
+	public Symbol noSym;              //!< used in case of an error
+	public BitArray allSyncSets;      //!< union of all synchronisation sets
+	public Hashtable literals;        //!< symbols that are used as literals
 
-	public string srcName;            // name of the atg file (including path)
-	public string srcDir;             // directory path of the atg file
-	public string nsName;             // namespace for generated files
-	public string frameDir;           // directory containing the frame files
-	public string outDir;             // directory for generated files
+	public string grammarName;        //!< The name of the grammar, set by Coco-cs.atg
 
-	BitArray visited;                 // mark list for graph traversals
-	Symbol curSy;                     // current symbol in computation of sets
+	public string srcName;            //!< name of the atg file (including path)
+	public string srcDir;             //!< directory path of the atg file
+	public string nsName;             //!< namespace for generated files
+	public string frameDir;           //!< directory containing the frame files
+	public string outDir;             //!< directory for generated files
+
+	BitArray visited;                 //!< mark list for graph traversals
+	Symbol curSy;                     //!< current symbol in computation of sets
 
 	Parser parser;                    // other Coco objects
-	TextWriter trace;
 	Errors errors;
+	public TextWriter trace = Console.Error;
 
 	public Tab(Parser parser) {
-		explicitEof = false;
 		this.parser = parser;
-		trace = parser.trace;
 		errors = parser.errors;
 		eofSy = NewSym(Node.t, "EOF", 0);
 		dummyNode = NewNode(Node.eps, null, 0);
@@ -1180,6 +1179,14 @@ public class Tab {
 		trace.WriteLine(); trace.WriteLine();
 	}
 
+	public void PrintStatistics () {
+		trace.WriteLine();
+		trace.WriteLine("{0} terminals", terminals.Count);
+		trace.WriteLine("{0} symbols", terminals.Count + pragmas.Count +
+		                               nonterminals.Count);
+		trace.WriteLine("{0} nodes", nodes.Count);
+	}
+
 	//--------- Compiler directives ------------
 
 	public void DispatchDirective(string str) {
@@ -1223,6 +1230,7 @@ public class Tab {
 	}
 
 	public void SetDDT(string s) {
+		if (s == null) return;
 		s = s.ToUpper();
 		foreach (char ch in s) {
 			if ('0' <= ch && ch <= '9') ddt[ch - '0'] = true;
@@ -1259,7 +1267,7 @@ public class Tab {
 		string stop,
 		bool doOutput
 	)
-    {
+	{
 		char startCh = stop[0];
 		int endOfStopString = stop.Length-1;
 		int ch = istr.ReadByte();

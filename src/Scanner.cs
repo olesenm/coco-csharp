@@ -34,12 +34,12 @@ namespace at.jku.ssw.Coco {
 
 
 public class Token {
-	public int kind;    // token kind
-	public int pos;     // token position in the source text (starting at 0)
-	public int col;     // token column (starting at 1)
-	public int line;    // token line (starting at 1)
-	public string val;  // token value
-	public Token next;  // ML 2005-03-11 Tokens are kept in linked list
+	public int kind;    //!< token kind
+	public int pos;     //!< token position in the source text (starting at 0)
+	public int col;     //!< token column (starting at 1)
+	public int line;    //!< token line (starting at 1)
+	public string val;  //!< token value
+	public Token next;  //!< Tokens are kept in linked list
 }
 
 //-----------------------------------------------------------------------------------
@@ -55,13 +55,13 @@ public class Buffer {
 	public const int EOF = char.MaxValue + 1;
 	const int MIN_BUFFER_LENGTH = 1024; // 1KB
 	const int MAX_BUFFER_LENGTH = MIN_BUFFER_LENGTH * 64; // 64KB
-	byte[] buf;         // input buffer
-	int bufStart;       // position of first byte in buffer relative to input stream
-	int bufLen;         // length of buffer
-	int fileLen;        // length of input stream (may change if the stream is no file)
-	int bufPos;         // current position in buffer
-	Stream stream;      // input stream (seekable)
-	bool isUserStream;  // was the stream opened by the user?
+	byte[] buf;         //!< input buffer
+	int bufStart;       //!< position of first byte in buffer relative to input stream
+	int bufLen;         //!< length of buffer
+	int fileLen;        //!< length of input stream (may change if the stream is no file)
+	int bufPos;         //!< current position in buffer
+	Stream stream;      //!< input stream (seekable)
+	bool isUserStream;  //!< was the stream opened by the user?
 
 	public Buffer (Stream s, bool isUserStream) {
 		stream = s; this.isUserStream = isUserStream;
@@ -232,21 +232,21 @@ public class Scanner {
 	const int noSym = 43;
 
 
-	public Buffer buffer; // scanner buffer
+	public Buffer buffer; //!< scanner buffer
 
-	Token t;          // current token
-	int ch;           // current input character
-	int pos;          // byte position of current character
-	int col;          // column number of current character
-	int line;         // line number of current character
-	int oldEols;      // EOLs that appeared in a comment;
-	static readonly Hashtable start; // maps first token character to start state
+	Token t;          //!< current token
+	int ch;           //!< current input character
+	int pos;          //!< byte position of current character
+	int col;          //!< column number of current character
+	int line;         //!< line number of current character
+	int oldEols;      //!< EOLs that appeared in a comment;
+	static readonly Hashtable start; //!< maps first token character to start state
 
-	Token tokens;     // list of tokens already peeked (first token is a dummy)
-	Token pt;         // current peek token
+	Token tokens;     //!< list of tokens already peeked (first token is a dummy)
+	Token pt;         //!< current peek token
 
-	char[] tval = new char[128]; // text of current token
-	int tlen;         // length of current token
+	char[] tval = new char[128]; //!< text of current token
+	int tlen;         //!< length of current token
 
 	static Scanner() {
 		start = new Hashtable(128);

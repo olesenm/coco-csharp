@@ -33,34 +33,32 @@ using System.Text;
 namespace at.jku.ssw.Coco {
 
 public class ParserGen {
-
-	const int maxTerm = 3;      // sets of size < maxTerm are enumerated
+	const int maxTerm = 3;      //!< sets of size < maxTerm are enumerated
 	const char CR  = '\r';
 	const char LF  = '\n';
-	const int EOF = -1;
 
-	const int tErr    = 0;      // error codes
+	const int tErr    = 0;      //!< error codes
 	const int altErr  = 1;
 	const int syncErr = 2;
 
-	public Position usingPos; // "using" definitions from the attributed grammar
+	public Position preamblePos = null;   //!< position of "using" definitions from attributed grammar
+	public Position semDeclPos = null;    //!< position of global semantic declarations
+	public Position initCodePos = null;   //!< position of initialization code
+	public Position deinitCodePos = null; //!< position of de-initialization (destructor) code
 
-	int errorNr;      // highest parser error number
-	Symbol curSy;     // symbol whose production is currently generated
-	FileStream fram;  // parser frame file
-	StreamWriter gen; // generated parser source file
-	StringWriter err; // generated parser error messages
+	int errorNr;      //!< highest parser error number
+	Symbol curSy;     //!< symbol whose production is currently generated
+	FileStream fram;  //!< parser frame file
+	StreamWriter gen; //!< generated parser source file
+	StringWriter err; //!< generated parser error messages
 	ArrayList symSet = new ArrayList();
 
 	Tab tab;          // other Coco objects
-	TextWriter trace;
-	// UNUSED: Errors errors;
 	Buffer buffer;
 
 	void Indent (int n) {
 		for (int i=0; i < n; ++i) gen.Write('\t');
 	}
-
 
 	bool Overlaps(BitArray s1, BitArray s2) {
 		int len = s1.Count;
@@ -72,7 +70,7 @@ public class ParserGen {
 		return false;
 	}
 
-	// use a switch if more than 5 alternatives and none starts with a resolver
+	//! use a switch if more than 5 alternatives and none starts with a resolver
 	bool UseSwitch (Node p) {
 		BitArray s1, s2;
 		if (p.typ != Node.alt) return false;
@@ -105,8 +103,8 @@ public class ParserGen {
 
 	void CopySourcePart (Position pos, int indent) {
 		// Copy text described by pos from atg to gen
-		int ch, i;
 		if (pos != null) {
+			int ch, i;
 			buffer.Pos = pos.beg; ch = buffer.Read();
 			Indent(indent);
 			while (buffer.Pos <= pos.end) {
@@ -346,10 +344,10 @@ public class ParserGen {
 		}
 	}
 
-	void OpenGen(bool backUp) { /* pdt */
+	void OpenGen() {
 		try {
 			string fn = Path.Combine(tab.outDir, "Parser.cs"); /* pdt */
-			if (File.Exists(fn) && backUp) File.Copy(fn, fn + ".old", true);
+			if (tab.makeBackup && File.Exists(fn)) File.Copy(fn, fn + ".bak", true);
 			gen = new StreamWriter(new FileStream(fn, FileMode.Create)); /* pdt */
 		} catch (IOException) {
 			throw new FatalError("Cannot generate parser file");
@@ -370,13 +368,13 @@ public class ParserGen {
 			throw new FatalError("Cannot open Parser.frame.");
 		}
 
-		OpenGen(true); /* pdt */
 		err = new StringWriter();
 		foreach (Symbol sym in tab.terminals) GenErrorMsg(tErr, sym);
 
+		OpenGen();
 		CopyFramePart("-->begin", tab.keepCopyright());
 
-		if (usingPos != null) { CopySourcePart(usingPos, 0); gen.WriteLine(); }
+		if (preamblePos != null) { CopySourcePart(preamblePos, 0); gen.WriteLine(); }
 		CopyFramePart("-->namespace");
 		/* AW open namespace, if it exists */
 		if (tab.nsName != null && tab.nsName.Length > 0) {
@@ -387,20 +385,15 @@ public class ParserGen {
 		GenTokens(); /* ML 2002/09/07 write the token kinds */
 		gen.WriteLine("\tpublic const int maxT = {0};", tab.terminals.Count-1);
 		GenPragmas(); /* ML 2005/09/23 write the pragma kinds */
-		CopyFramePart("-->declarations"); CopySourcePart(tab.semDeclPos, 0);
-
-		CopyFramePart("-->constructor");
-		if (tab.initCodePos != null)
-		{
-			CopySourcePart(tab.initCodePos, 2);
-		}
+		CopyFramePart("-->declarations"); CopySourcePart(semDeclPos, 0);
+		CopyFramePart("-->constructor");  CopySourcePart(initCodePos, 2);
 
 		CopyFramePart("-->destructor");
-		if (tab.deinitCodePos != null)
+		if (deinitCodePos != null)
 		{
 			gen.WriteLine("\t~Parser() {");
 			gen.WriteLine("\t\t// user-defined destruction:");
-			CopySourcePart(tab.deinitCodePos, 2);
+			CopySourcePart(deinitCodePos, 2);
 			gen.WriteLine("\t}");
 		}
 
@@ -422,22 +415,14 @@ public class ParserGen {
 		buffer.Pos = oldPos;
 	}
 
-	public void WriteStatistics () {
-		trace.WriteLine();
-		trace.WriteLine("{0} terminals", tab.terminals.Count);
-		trace.WriteLine("{0} symbols", tab.terminals.Count + tab.pragmas.Count +
-		                               tab.nonterminals.Count);
-		trace.WriteLine("{0} nodes", tab.nodes.Count);
-		trace.WriteLine("{0} sets", symSet.Count);
+	public void PrintStatistics () {
+		tab.trace.WriteLine("{0} sets", symSet.Count);
 	}
 
 	public ParserGen (Parser parser) {
 		tab = parser.tab;
-		// UNUSED: errors = parser.errors;
-		trace = parser.trace;
 		buffer = parser.scanner.buffer;
 		errorNr = -1;
-		usingPos = null;
 	}
 
 } // end ParserGen

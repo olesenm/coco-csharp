@@ -52,15 +52,14 @@ public class Parser {
 	public Scanner scanner;
 	public Errors  errors;
 
-	public Token t;    // last recognized token
-	public Token la;   // lookahead token
+	public Token t;    //!< last recognized token
+	public Token la;   //!< lookahead token
 	int errDist = minErrDist;
 
 const int isIdent   = 0;
 	const int isLiteral = 1;
 
-	public TextWriter trace;    // other Coco objects referenced in this ATG
-	public Tab tab;
+	public Tab tab;             // other Coco objects referenced in this ATG
 	public DFA dfa;
 	public ParserGen pgen;
 
@@ -150,7 +149,7 @@ const int isIdent   = 0;
 			while (StartOf(1)) {
 				Get();
 			}
-			pgen.usingPos = new Position(beg, la.pos, 0); 
+			pgen.preamblePos = new Position(beg, la.pos, 0); 
 		}
 		Expect(6);
 		genScanner = true;
@@ -162,7 +161,7 @@ const int isIdent   = 0;
 		while (StartOf(2)) {
 			Get();
 		}
-		tab.semDeclPos = new Position(beg, la.pos, 0); 
+		pgen.semDeclPos = new Position(beg, la.pos, 0); 
 		if (la.kind == 7) {
 			Get();
 			if (StartOf(3)) {
@@ -171,7 +170,7 @@ const int isIdent   = 0;
 				while (StartOf(3)) {
 					Get();
 				}
-				tab.initCodePos = new Position(beg, la.pos, 0); 
+				pgen.initCodePos = new Position(beg, la.pos, 0); 
 			}
 		}
 		if (la.kind == 8) {
@@ -182,7 +181,7 @@ const int isIdent   = 0;
 				while (StartOf(4)) {
 					Get();
 				}
-				tab.deinitCodePos = new Position(beg, la.pos, 0); 
+				pgen.deinitCodePos = new Position(beg, la.pos, 0); 
 			}
 		}
 		if (la.kind == 9) {
@@ -291,7 +290,8 @@ const int isIdent   = 0;
 		    }
 		    Console.WriteLine(" generated");
 		    if (tab.ddt[8]) {
-		      pgen.WriteStatistics();
+		      tab.PrintStatistics();
+		      pgen.PrintStatistics();
 		    }
 		  }
 		}
