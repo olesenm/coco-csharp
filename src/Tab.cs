@@ -201,9 +201,14 @@ public class CharClass {
 //=====================================================================
 
 public class Tab {
+	const char CR  = '\r';
+	const char LF  = '\n';
+
 	public bool explicitEof = false;  //!< user must explicitly add EOF in grammar
 	public bool makeBackup  = false;  //!< create .bak files for generated parser/scanner
 	public bool[] ddt = new bool[10]; //!< debug and test switches
+
+	public Position copyPos = null;   //!< position of verbatim copy (eg, copyright headers) in atg
 
 	public CharSet ignored;           //!< characters ignored by the scanner
 	public Symbol gramSy;             //!< root nonterminal; filled by ATG
@@ -211,8 +216,6 @@ public class Tab {
 	public Symbol noSym;              //!< used in case of an error
 	public BitArray allSyncSets;      //!< union of all synchronisation sets
 	public Hashtable literals;        //!< symbols that are used as literals
-
-	public string grammarName;        //!< The name of the grammar, set by Coco-cs.atg
 
 	public string srcName;            //!< name of the atg file (including path)
 	public string srcDir;             //!< directory path of the atg file
@@ -225,13 +228,17 @@ public class Tab {
 
 	Parser parser;                    // other Coco objects
 	Errors errors;
+	public Buffer buffer;
+
 	public TextWriter trace = Console.Error;
 
 	public Tab(Parser parser) {
 		this.parser = parser;
 		errors = parser.errors;
+		buffer = parser.scanner.buffer;
 		eofSy = NewSym(Node.t, "EOF", 0);
 		dummyNode = NewNode(Node.eps, null, 0);
+		ignored  = new CharSet();
 		literals = new Hashtable();
 	}
 
@@ -1254,12 +1261,6 @@ public class Tab {
 		}
 	}
 
-
-	public bool keepCopyright()
-	{
-		return (grammarName.ToLower() == "coco");
-	}
-
 	public bool CopyFramePart
 	(
 		FileStream istr,
@@ -1296,6 +1297,33 @@ public class Tab {
 	public bool CopyFramePart(FileStream istr, StreamWriter ostr, string stop)
 	{
 		return CopyFramePart(istr, ostr, stop, true);
+	}
+
+	public void CopySourcePart(StreamWriter dest, Position pos, int indent) {
+		// Copy text described by pos from atg to dest
+		if (pos != null) {
+			int ch, i;
+			buffer.Pos = pos.beg; ch = buffer.Read();
+			for (int t=0; t < indent; ++t) dest.Write('\t');
+			while (buffer.Pos <= pos.end) {
+				while (ch == CR || ch == LF) {  // eol is either CR or CRLF or LF
+					dest.WriteLine();
+					for (int t=0; t < indent; ++t) dest.Write('\t');
+					if (ch == CR) ch = buffer.Read(); // skip CR
+					if (ch == LF) ch = buffer.Read(); // skip LF
+					for (i = 1; i <= pos.col && (ch == ' ' || ch == '\t'); i++) {
+						// skip blanks at beginning of line
+						ch = buffer.Read();
+					}
+					if (i <= pos.col) pos.col = i - 1; // heading TABs => not enough blanks
+					if (buffer.Pos > pos.end) goto done;
+				}
+				dest.Write((char)ch);
+				ch = buffer.Read();
+			}
+			done:
+			if (indent > 0) dest.WriteLine();
+		}
 	}
 
 

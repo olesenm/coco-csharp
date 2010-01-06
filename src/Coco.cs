@@ -79,7 +79,7 @@ public class Coco {
 	}
 
 	public static int Main (string[] arg) {
-		Console.WriteLine("Coco/R C# (04 Jan 2010)");
+		Console.WriteLine("Coco/R C# (06 Jan 2010)");
 		string srcName = null, nsName = null, frameDir = null, ddtString = null, outDir = null;
 		bool makeBackup = false;
 		bool traceToFile = true;

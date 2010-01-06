@@ -54,7 +54,6 @@ public class ParserGen {
 	ArrayList symSet = new ArrayList();
 
 	Tab tab;          // other Coco objects
-	Buffer buffer;
 
 	void Indent (int n) {
 		for (int i=0; i < n; ++i) gen.Write('\t');
@@ -101,30 +100,8 @@ public class ParserGen {
 		CopyFramePart(stop, true);
 	}
 
-	void CopySourcePart (Position pos, int indent) {
-		// Copy text described by pos from atg to gen
-		if (pos != null) {
-			int ch, i;
-			buffer.Pos = pos.beg; ch = buffer.Read();
-			Indent(indent);
-			while (buffer.Pos <= pos.end) {
-				while (ch == CR || ch == LF) {  // eol is either CR or CRLF or LF
-					gen.WriteLine(); Indent(indent);
-					if (ch == CR) ch = buffer.Read(); // skip CR
-					if (ch == LF) ch = buffer.Read(); // skip LF
-					for (i = 1; i <= pos.col && (ch == ' ' || ch == '\t'); i++) {
-						// skip blanks at beginning of line
-						ch = buffer.Read();
-					}
-					if (i <= pos.col) pos.col = i - 1; // heading TABs => not enough blanks
-					if (buffer.Pos > pos.end) goto done;
-				}
-				gen.Write((char)ch);
-				ch = buffer.Read();
-			}
-			done:
-			if (indent > 0) gen.WriteLine();
-		}
+	void CopySourcePart(Position pos, int indent) {
+		tab.CopySourcePart(gen, pos, indent);
 	}
 
 	void GenErrorMsg (int errTyp, Symbol sym) {
@@ -355,7 +332,7 @@ public class ParserGen {
 	}
 
 	public void WriteParser () {
-		int oldPos = buffer.Pos;  // Pos is modified by CopySourcePart
+		int oldPos = tab.buffer.Pos;  // Pos is modified by CopySourcePart
 		symSet.Add(tab.allSyncSets);
 		string fr = Path.Combine(tab.srcDir, "Parser.frame");
 		if (!File.Exists(fr)) {
@@ -372,7 +349,8 @@ public class ParserGen {
 		foreach (Symbol sym in tab.terminals) GenErrorMsg(tErr, sym);
 
 		OpenGen();
-		CopyFramePart("-->begin", tab.keepCopyright());
+		CopyFramePart("-->begin", false);
+		CopySourcePart(tab.copyPos, 0);
 
 		if (preamblePos != null) { CopySourcePart(preamblePos, 0); gen.WriteLine(); }
 		CopyFramePart("-->namespace");
@@ -412,7 +390,7 @@ public class ParserGen {
 		/* AW 2002-12-20 close namespace, if it exists */
 		if (tab.nsName != null && tab.nsName.Length > 0) gen.WriteLine("} // end namespace");
 		gen.Close();
-		buffer.Pos = oldPos;
+		tab.buffer.Pos = oldPos;
 	}
 
 	public void PrintStatistics () {
@@ -421,7 +399,6 @@ public class ParserGen {
 
 	public ParserGen (Parser parser) {
 		tab = parser.tab;
-		buffer = parser.scanner.buffer;
 		errorNr = -1;
 	}
 

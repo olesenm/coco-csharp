@@ -851,7 +851,7 @@ public class DFA {
 			gen.WriteLine("\t\t\t\t\ttlen -= apx;");
 			gen.WriteLine("\t\t\t\t\tbuffer.Pos = t.pos; NextCh(); line = t.line; col = t.col;");
 			gen.WriteLine("\t\t\t\t\tfor (int i = 0; i < tlen; i++) NextCh();");
-			gen.Write(  	"\t\t\t\t\t");
+			gen.Write("\t\t\t\t\t");
 		}
 		if (endOf == null) {
 			gen.WriteLine("t.kind = noSym; break;}");
@@ -891,6 +891,8 @@ public class DFA {
 	}
 
 	public void WriteScanner() {
+		int oldPos = tab.buffer.Pos;  // Pos is modified by CopySourcePart
+
 		int i;
 		string fr = Path.Combine(tab.srcDir, "Scanner.frame");  /* pdt */
 		if (!File.Exists(fr)) {
@@ -906,7 +908,8 @@ public class DFA {
 		if (dirtyDFA) MakeDeterministic();
 
 		OpenGen();
-		CopyFramePart("-->begin", tab.keepCopyright());
+		CopyFramePart("-->begin", false);
+		tab.CopySourcePart(gen, tab.copyPos, 0);
 
 		CopyFramePart("-->namespace");
 		if (tab.nsName != null && tab.nsName.Length > 0) {
@@ -959,6 +962,7 @@ public class DFA {
 		CopyFramePart("$$$");
 		if (tab.nsName != null && tab.nsName.Length > 0) gen.WriteLine("} // end namespace");
 		gen.Close();
+		tab.buffer.Pos = oldPos;
 	}
 
 	public DFA (Parser parser) {
