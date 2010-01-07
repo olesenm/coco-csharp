@@ -219,7 +219,8 @@ public class Tab {
 
 	public string srcName;            //!< name of the atg file (including path)
 	public string srcDir;             //!< directory path of the atg file
-	public string nsName;             //!< namespace for generated files
+	public string nsName = null;      //!< namespace for generated files
+	public string prefixName = null;  //!< prefix for generated files
 	public string frameDir;           //!< directory containing the frame files
 	public string outDir;             //!< directory for generated files
 
@@ -1214,6 +1215,15 @@ public class Tab {
 				nsName = strval;
 			}
 			Console.WriteLine("using namespace: '" + nsName + "'");
+		}
+		else if (name == "$prefix")
+		{
+			// set prefix only if not already set
+			if (prefixName == null)
+			{
+				prefixName = strval;
+			}
+			Console.WriteLine("using prefix: '" + prefixName + "'");
 		}
 		else if (name == "$trace")
 		{

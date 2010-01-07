@@ -882,7 +882,11 @@ public class DFA {
 
 	void OpenGen() {
 		try {
-			string fn = Path.Combine(tab.outDir, "Scanner.cs"); /* pdt */
+			string fn = Path.Combine
+			(
+				tab.outDir,
+				(tab.prefixName == null ? "" : tab.prefixName) + "Scanner.cs"
+			);
 			if (tab.makeBackup && File.Exists(fn)) File.Copy(fn, fn + ".bak", true);
 			gen = new StreamWriter(new FileStream(fn, FileMode.Create)); /* pdt */
 		} catch (IOException) {

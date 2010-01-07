@@ -55,6 +55,7 @@ public class Coco {
 			"Usage: Coco Grammar.atg {{Option}}{0}" +
 			"Options:{0}" +
 			"  -namespace <Name>      eg, My.Name.Space{0}" +
+			"  -prefix    <Name>      for unique Parser/Scanner file names{0}" +
 			"  -frames    <Dir>       for frames not in the source directory{0}" +
 			"  -trace     <String>    trace with output to trace.txt{0}" +
 			"  -trace2    <String>    trace with output on stderr{0}" +
@@ -80,7 +81,8 @@ public class Coco {
 
 	public static int Main (string[] arg) {
 		Console.WriteLine("Coco/R C# (06 Jan 2010)");
-		string srcName = null, nsName = null, frameDir = null, ddtString = null, outDir = null;
+		string srcName = null, nsName = null, prefixName = null;
+		string frameDir = null, ddtString = null, outDir = null;
 		bool makeBackup = false;
 		bool traceToFile = true;
 		int retVal = 1;
@@ -96,6 +98,13 @@ public class Coco {
 					return retVal;
 				}
 				nsName = arg[i];
+			}
+			else if (arg[i] == "-prefix") {
+				if (++i == arg.Length) {
+					printUsage("missing parameter on -prefix");
+					return retVal;
+				}
+				prefixName = arg[i];
 			}
 			else if (arg[i] == "-frames") {
 				if (++i == arg.Length) {
@@ -152,9 +161,10 @@ public class Coco {
 				Parser parser   = new Parser(scanner);
 				parser.tab      = new Tab(parser);
 
-				parser.tab.srcName  = srcName;
-				parser.tab.srcDir   = srcDir;
-				parser.tab.nsName   = nsName;
+				parser.tab.srcName    = srcName;
+				parser.tab.srcDir     = srcDir;
+				parser.tab.nsName     = nsName;
+				parser.tab.prefixName = prefixName;
 				parser.tab.frameDir = frameDir;
 				parser.tab.outDir   = (outDir != null) ? outDir : srcDir;
 				parser.tab.SetDDT(ddtString);
