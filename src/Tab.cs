@@ -201,27 +201,12 @@ public class CharClass {
 //=====================================================================
 
 public class Tab {
-	// Constants
-
 	const char CR  = '\r';
 	const char LF  = '\n';
 
-	// Static data members
-
-	static public bool explicitEOF = false;  //!< user must explicitly add EOF in grammar
-	static public bool makeBackup  = false;  //!< create .bak files for generated parser/scanner
-
-	static public string srcDir = null;      //!< directory path of the atg file
-	static public string frameDir = null;    //!< directory containing the frame files
-	static public string outDir = null;      //!< directory for generated files
-	static public string nsName = null;      //!< namespace for generated files
-	static public string prefixName = null;  //!< prefix for generated files
-
-	static public TextWriter trace = Console.Error;
-
-	static public bool[] ddt = new bool[10]; //!< debug and test switches
-
-	// Data members
+	public bool explicitEOF = false;  //!< user must explicitly add EOF in grammar
+	public bool makeBackup  = false;  //!< create .bak files for generated parser/scanner
+	public bool[] ddt = new bool[10]; //!< debug and test switches
 
 	public Position copyPos = null;   //!< position of verbatim copy (eg, copyright headers) in atg
 
@@ -232,12 +217,21 @@ public class Tab {
 	public BitArray allSyncSets;      //!< union of all synchronisation sets
 	public Hashtable literals;        //!< symbols that are used as literals
 
+	public string srcName;            //!< name of the atg file (including path)
+	public string srcDir;             //!< directory path of the atg file
+	public string nsName = null;      //!< namespace for generated files
+	public string prefixName = null;  //!< prefix for generated files
+	public string frameDir;           //!< directory containing the frame files
+	public string outDir;             //!< directory for generated files
+
 	BitArray visited;                 //!< mark list for graph traversals
 	Symbol curSy;                     //!< current symbol in computation of sets
 
 	Parser parser;                    // other Coco objects
 	Errors errors;
 	public Buffer buffer;
+
+	public TextWriter trace = Console.Error;
 
 	public Tab(Parser parser) {
 		this.parser = parser;
@@ -1225,11 +1219,11 @@ public class Tab {
 		else if (name == "$prefix")
 		{
 			// set prefix only if not already set
-			if (Tab.prefixName == null)
+			if (prefixName == null)
 			{
-				Tab.prefixName = strval;
+				prefixName = strval;
 			}
-			Console.WriteLine("using prefix: '" + Tab.prefixName + "'");
+			Console.WriteLine("using prefix: '" + prefixName + "'");
 		}
 		else if (name == "$trace")
 		{
@@ -1238,9 +1232,9 @@ public class Tab {
 		else if (name == "$explicitEOF")
 		{
 			if (strval == "true") {
-				Tab.explicitEOF = true;
+				explicitEOF = true;
 			} else if (strval == "false") {
-				Tab.explicitEOF = false;
+				explicitEOF = false;
 			}
 			else {
 				Console.WriteLine("ignoring unknown bool value for pragma: '" + name + "' = '" + strval + "'");
@@ -1252,7 +1246,7 @@ public class Tab {
 		}
 	}
 
-	static public void SetDDT(string s) {
+	public void SetDDT(string s) {
 		if (s == null) return;
 		s = s.ToUpper();
 		foreach (char ch in s) {

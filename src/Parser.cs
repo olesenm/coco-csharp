@@ -97,7 +97,7 @@ const int isIdent   = 0;
 			la = scanner.Scan();
 			if (la.kind <= maxT) { ++errDist; break; }
 				if (la.kind == 48) {
-				Tab.SetDDT(la.val); 
+				tab.SetDDT(la.val); 
 				}
 				if (la.kind == 49) {
 				tab.DispatchDirective(la.val); 
@@ -285,27 +285,27 @@ const int isIdent   = 0;
 		tab.noSym = tab.NewSym(Node.t, "???", 0); // noSym gets highest number
 		tab.SetupAnys();
 		tab.RenumberPragmas();
-		if (Tab.ddt[2]) tab.PrintNodes();
+		if (tab.ddt[2]) tab.PrintNodes();
 		if (errors.count == 0) {
 		  Console.WriteLine("checking");
 		  tab.CompSymbolSets();
-		  if (Tab.ddt[7]) tab.XRef();
+		  if (tab.ddt[7]) tab.XRef();
 		  if (tab.GrammarOk()) {
 		    Console.Write("parser");
 		    pgen.WriteParser();
 		    if (genScanner) {
 		      Console.Write(" + scanner");
 		      dfa.WriteScanner();
-		      if (Tab.ddt[0]) dfa.PrintStates();
+		      if (tab.ddt[0]) dfa.PrintStates();
 		    }
 		    Console.WriteLine(" generated");
-		    if (Tab.ddt[8]) {
+		    if (tab.ddt[8]) {
 		      tab.PrintStatistics();
 		      pgen.PrintStatistics();
 		    }
 		  }
 		}
-		if (Tab.ddt[6]) tab.PrintSymbolTable();
+		if (tab.ddt[6]) tab.PrintSymbolTable();
 		
 		Expect(24);
 	}

@@ -325,11 +325,11 @@ public class ParserGen {
 		try {
 			string fn = Path.Combine
 			(
-				Tab.outDir,
-				(Tab.prefixName == null ? "" : Tab.prefixName) + "Parser.cs"
+				tab.outDir,
+				(tab.prefixName == null ? "" : tab.prefixName) + "Parser.cs"
 			);
 
-			if (Tab.makeBackup && File.Exists(fn)) File.Copy(fn, fn + ".bak", true);
+			if (tab.makeBackup && File.Exists(fn)) File.Copy(fn, fn + ".bak", true);
 			gen = new StreamWriter(new FileStream(fn, FileMode.Create)); /* pdt */
 		} catch (IOException) {
 			throw new FatalError("Cannot generate parser file");
@@ -339,9 +339,9 @@ public class ParserGen {
 	public void WriteParser () {
 		int oldPos = tab.buffer.Pos;  // Pos is modified by CopySourcePart
 		symSet.Add(tab.allSyncSets);
-		string fr = Path.Combine(Tab.srcDir, "Parser.frame");
+		string fr = Path.Combine(tab.srcDir, "Parser.frame");
 		if (!File.Exists(fr)) {
-			if (Tab.frameDir != null) fr = Path.Combine(Tab.frameDir.Trim(), "Parser.frame");
+			if (tab.frameDir != null) fr = Path.Combine(tab.frameDir.Trim(), "Parser.frame");
 			if (!File.Exists(fr)) throw new FatalError("Cannot find Parser.frame");
 		}
 		try {
@@ -360,8 +360,8 @@ public class ParserGen {
 		if (preamblePos != null) { CopySourcePart(preamblePos, 0); gen.WriteLine(); }
 		CopyFramePart("-->namespace");
 		/* AW open namespace, if it exists */
-		if (Tab.nsName != null && Tab.nsName.Length > 0) {
-			gen.WriteLine("namespace {0} {{", Tab.nsName);
+		if (tab.nsName != null && tab.nsName.Length > 0) {
+			gen.WriteLine("namespace {0} {{", tab.nsName);
 			gen.WriteLine();
 		}
 		CopyFramePart("-->constants");
@@ -383,7 +383,7 @@ public class ParserGen {
 		CopyFramePart("-->pragmas"); GenCodePragmas();
 		CopyFramePart("-->productions"); GenProductions();
 		CopyFramePart("-->parseRoot"); gen.WriteLine("\t\t{0}();", tab.gramSy.name);
-		if (Tab.explicitEOF) {
+		if (tab.explicitEOF) {
 			gen.WriteLine("\t\t// let grammar deal with end-of-file expectations");
 		}
 		else {
@@ -393,13 +393,13 @@ public class ParserGen {
 		CopyFramePart("-->errors"); gen.Write(err.ToString());
 		CopyFramePart("$$$");
 		/* AW 2002-12-20 close namespace, if it exists */
-		if (Tab.nsName != null && Tab.nsName.Length > 0) gen.WriteLine("} // end namespace");
+		if (tab.nsName != null && tab.nsName.Length > 0) gen.WriteLine("} // end namespace");
 		gen.Close();
 		tab.buffer.Pos = oldPos;
 	}
 
 	public void PrintStatistics () {
-		Tab.trace.WriteLine("{0} sets", symSet.Count);
+		tab.trace.WriteLine("{0} sets", symSet.Count);
 	}
 
 	public ParserGen (Parser parser) {

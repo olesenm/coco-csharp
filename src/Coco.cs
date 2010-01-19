@@ -80,8 +80,10 @@ public class Coco {
 	}
 
 	public static int Main (string[] arg) {
-		Console.WriteLine("Coco/R C# (11 Jan 2010)");
-		string srcName = null;
+		Console.WriteLine("Coco/R C# (19 Jan 2010)");
+		string srcName = null, nsName = null, prefixName = null;
+		string frameDir = null, ddtString = null, outDir = null;
+		bool makeBackup = false;
 		bool traceToFile = true;
 		int retVal = 1;
 
@@ -95,21 +97,21 @@ public class Coco {
 					printUsage("missing parameter on -namespace");
 					return retVal;
 				}
-				Tab.nsName = arg[i];
+				nsName = arg[i];
 			}
 			else if (arg[i] == "-prefix") {
 				if (++i == arg.Length) {
 					printUsage("missing parameter on -prefix");
 					return retVal;
 				}
-				Tab.prefixName = arg[i];
+				prefixName = arg[i];
 			}
 			else if (arg[i] == "-frames") {
 				if (++i == arg.Length) {
 					printUsage("missing parameter on -frames");
 					return retVal;
 				}
-				Tab.frameDir = arg[i];
+				frameDir = arg[i];
 			}
 			else if (arg[i] == "-trace") {
 				if (++i == arg.Length) {
@@ -117,7 +119,7 @@ public class Coco {
 					return retVal;
 				}
 				traceToFile = true;
-				Tab.SetDDT(arg[i]);
+				ddtString = arg[i];
 			}
 			else if (arg[i] == "-trace2") {
 				if (++i == arg.Length) {
@@ -125,17 +127,17 @@ public class Coco {
 					return retVal;
 				}
 				traceToFile = false;
-				Tab.SetDDT(arg[i]);
+				ddtString = arg[i];
 			}
 			else if (arg[i] == "-o") {
 				if (++i == arg.Length) {
 					printUsage("missing parameter on -o");
 					return retVal;
 				}
-				Tab.outDir = arg[i];
+				outDir = arg[i];
 			}
 			else if (arg[i] == "-bak") {
-				Tab.makeBackup = true;
+				makeBackup = true;
 			}
 			else if (arg[i][0] == '-') {
 				printUsage("Error: unknown option: '" + arg[i] + "'");
@@ -153,27 +155,32 @@ public class Coco {
 		if (srcName != null) {
 			string traceFileName = null;
 			try {
-				Tab.srcDir     = Path.GetDirectoryName(srcName);
-				// no -o defined: output to srcDir
-				if (Tab.outDir == null) {
-					Tab.outDir = Tab.srcDir;
-				}
+				string srcDir = Path.GetDirectoryName(srcName);
 
 				Scanner scanner = new Scanner(srcName);
 				Parser parser   = new Parser(scanner);
 				parser.tab      = new Tab(parser);
-				parser.dfa = new DFA(parser);
-				parser.pgen = new ParserGen(parser);
+
+				parser.tab.srcName    = srcName;
+				parser.tab.srcDir     = srcDir;
+				parser.tab.nsName     = nsName;
+				parser.tab.prefixName = prefixName;
+				parser.tab.frameDir = frameDir;
+				parser.tab.outDir   = (outDir != null) ? outDir : srcDir;
+				parser.tab.SetDDT(ddtString);
+				parser.tab.makeBackup = makeBackup;
 
 				if (traceToFile) {
-					traceFileName = Path.Combine(Tab.outDir, "trace.txt");
-					Tab.trace = new StreamWriter(new FileStream(traceFileName, FileMode.Create));
+					traceFileName = Path.Combine(parser.tab.outDir, "trace.txt");
+					parser.tab.trace = new StreamWriter(new FileStream(traceFileName, FileMode.Create));
 				}
+				parser.dfa = new DFA(parser);
+				parser.pgen = new ParserGen(parser);
 
 				parser.Parse();
 
 				if (traceToFile) {
-					Tab.trace.Close();
+					parser.tab.trace.Close();
 					FileInfo f = new FileInfo(traceFileName);
 					if (f.Length == 0) f.Delete();
 					else Console.WriteLine("trace output is in " + traceFileName);

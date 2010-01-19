@@ -615,7 +615,7 @@ public class DFA {
 	}
 
 	public void PrintStates() {
-		TextWriter trace = Tab.trace;
+		TextWriter trace = tab.trace;
 
 		trace.WriteLine();
 		trace.WriteLine("---------- states ----------");
@@ -884,10 +884,10 @@ public class DFA {
 		try {
 			string fn = Path.Combine
 			(
-				Tab.outDir,
-				(Tab.prefixName == null ? "" : Tab.prefixName) + "Scanner.cs"
+				tab.outDir,
+				(tab.prefixName == null ? "" : tab.prefixName) + "Scanner.cs"
 			);
-			if (Tab.makeBackup && File.Exists(fn)) File.Copy(fn, fn + ".bak", true);
+			if (tab.makeBackup && File.Exists(fn)) File.Copy(fn, fn + ".bak", true);
 			gen = new StreamWriter(new FileStream(fn, FileMode.Create)); /* pdt */
 		} catch (IOException) {
 			throw new FatalError("Cannot generate scanner file");
@@ -898,9 +898,9 @@ public class DFA {
 		int oldPos = tab.buffer.Pos;  // Pos is modified by CopySourcePart
 
 		int i;
-		string fr = Path.Combine(Tab.srcDir, "Scanner.frame");  /* pdt */
+		string fr = Path.Combine(tab.srcDir, "Scanner.frame");  /* pdt */
 		if (!File.Exists(fr)) {
-			if (Tab.frameDir != null) fr = Path.Combine(Tab.frameDir.Trim(), "Scanner.frame");
+			if (tab.frameDir != null) fr = Path.Combine(tab.frameDir.Trim(), "Scanner.frame");
 			if (!File.Exists(fr)) throw new FatalError("Cannot find Scanner.frame");
 		}
 		try {
@@ -916,8 +916,8 @@ public class DFA {
 		tab.CopySourcePart(gen, tab.copyPos, 0);
 
 		CopyFramePart("-->namespace");
-		if (Tab.nsName != null && Tab.nsName.Length > 0) {
-			gen.WriteLine("namespace {0} {{", Tab.nsName);
+		if (tab.nsName != null && tab.nsName.Length > 0) {
+			gen.WriteLine("namespace {0} {{", tab.nsName);
 			gen.WriteLine();
 		}
 		CopyFramePart("-->declarations");
@@ -964,7 +964,7 @@ public class DFA {
 		for (State state = firstState.next; state != null; state = state.next)
 			WriteState(state);
 		CopyFramePart("$$$");
-		if (Tab.nsName != null && Tab.nsName.Length > 0) gen.WriteLine("} // end namespace");
+		if (tab.nsName != null && tab.nsName.Length > 0) gen.WriteLine("} // end namespace");
 		gen.Close();
 		tab.buffer.Pos = oldPos;
 	}
