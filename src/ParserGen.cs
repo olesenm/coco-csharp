@@ -43,8 +43,6 @@ public class ParserGen {
 
 	public Position preamblePos = null;   //!< position of "using" definitions from attributed grammar
 	public Position semDeclPos = null;    //!< position of global semantic declarations
-	public Position initCodePos = null;   //!< position of initialization code
-	public Position deinitCodePos = null; //!< position of de-initialization (destructor) code
 
 	int errorNr;      //!< highest parser error number
 	Symbol curSy;     //!< symbol whose production is currently generated
@@ -369,16 +367,6 @@ public class ParserGen {
 		gen.WriteLine("\tpublic const int maxT = {0};", tab.terminals.Count-1);
 		GenPragmas(); /* ML 2005/09/23 write the pragma kinds */
 		CopyFramePart("-->declarations"); CopySourcePart(semDeclPos, 0);
-		CopyFramePart("-->constructor");  CopySourcePart(initCodePos, 2);
-
-		CopyFramePart("-->destructor");
-		if (deinitCodePos != null)
-		{
-			gen.WriteLine("\t~Parser() {");
-			gen.WriteLine("\t\t// user-defined destruction:");
-			CopySourcePart(deinitCodePos, 2);
-			gen.WriteLine("\t}");
-		}
 
 		CopyFramePart("-->pragmas"); GenCodePragmas();
 		CopyFramePart("-->productions"); GenProductions();

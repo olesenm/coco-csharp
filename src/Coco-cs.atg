@@ -105,22 +105,6 @@ Coco                            (. Symbol sym; Graph g; string grammarName; Char
     { ANY }                     (. pgen.semDeclPos = new Position(beg, la.pos, 0); .)
   ]
 
-  // this section can be used to add code to the constructor
-  [ "[initialize]"
-    [ ANY                       (. int beg = t.pos; .)
-      { ANY }                   (. pgen.initCodePos = new Position(beg, la.pos, 0); .)
-    ]
-    "[/initialize]"
-  ]
-
-  // this section can be used to add code to the destructor
-  [ "[destroy]"
-    [ ANY                       (. int beg = t.pos; .)
-      { ANY }                   (. pgen.deinitCodePos = new Position(beg, la.pos, 0); .)
-    ]
-    "[/destroy]"
-  ]
-
   [ "IGNORECASE"                (. dfa.ignoreCase = true; .) ]   /* pdt */
   [ "CHARACTERS" { SetDecl }]
   [ "TOKENS"  { TokenDecl<Node.t> }]
