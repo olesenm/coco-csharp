@@ -517,7 +517,7 @@ public class DFA {
 			state.endOf = sym;
 		} else if (matchedSym.tokenKind == Symbol.fixedToken || (a != null && a.tc == Node.contextTrans)) {
 			// s matched a token with a fixed definition or a token with an appendix that will be cut off
-			parser.SemErr("tokens " + sym.name + " and " + matchedSym.name + " cannot be distinguished");
+			parser.SemErr("cannot distinguish tokens " + sym.name + " and " + matchedSym.name);
 		} else { // matchedSym == classToken || classLitToken
 			matchedSym.tokenKind = Symbol.classLitToken;
 			sym.tokenKind = Symbol.litToken;

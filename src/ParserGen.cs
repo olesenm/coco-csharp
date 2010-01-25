@@ -104,7 +104,7 @@ public class ParserGen {
 
 	void GenErrorMsg (int errTyp, Symbol sym) {
 		errorNr++;
-		err.Write("\t\t\tcase " + errorNr + ": s = \"");
+		err.Write("\t\t\tcase " + errorNr + ": return \"");
 		switch (errTyp) {
 			case tErr:
 				if (sym.name[0] == '"') err.Write(tab.Escape(sym.name) + " expected");
@@ -113,7 +113,7 @@ public class ParserGen {
 			case altErr: err.Write("invalid " + sym.name); break;
 			case syncErr: err.Write("this symbol not expected in " + sym.name); break;
 		}
-		err.WriteLine("\"; break;");
+		err.WriteLine("\";");
 	}
 
 	int NewCondSet (BitArray s) {

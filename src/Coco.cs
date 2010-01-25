@@ -80,7 +80,7 @@ public class Coco {
 	}
 
 	public static int Main (string[] arg) {
-		Console.WriteLine("Coco/R C# (19 Jan 2010)");
+		Console.WriteLine("Coco/R C# (25 Jan 2010)");
 		string srcName = null, nsName = null, prefixName = null;
 		string frameDir = null, ddtString = null, outDir = null;
 		bool makeBackup = false;

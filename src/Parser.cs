@@ -751,69 +751,71 @@ const int isIdent   = 0;
 public class Errors {
 	public int count = 0;                                    // number of errors detected
 	public System.IO.TextWriter errorStream = Console.Out;   // error messages go to this stream
-  public string errMsgFormat = "-- line {0} col {1}: {2}"; // 0=line, 1=column, 2=text
+	public string errMsgFormat = "-- line {0} col {1}: {2}"; // 0=line, 1=column, 2=text
+
+	static public string strerror(int n) {
+		switch (n) {
+			case 0: return "EOF expected";
+			case 1: return "ident expected";
+			case 2: return "number expected";
+			case 3: return "string expected";
+			case 4: return "badString expected";
+			case 5: return "char expected";
+			case 6: return "\"[copy]\" expected";
+			case 7: return "\"[/copy]\" expected";
+			case 8: return "\"COMPILER\" expected";
+			case 9: return "\"IGNORECASE\" expected";
+			case 10: return "\"CHARACTERS\" expected";
+			case 11: return "\"TOKENS\" expected";
+			case 12: return "\"PRAGMAS\" expected";
+			case 13: return "\"COMMENTS\" expected";
+			case 14: return "\"FROM\" expected";
+			case 15: return "\"TO\" expected";
+			case 16: return "\"NESTED\" expected";
+			case 17: return "\"IGNORE\" expected";
+			case 18: return "\"PRODUCTIONS\" expected";
+			case 19: return "\"=\" expected";
+			case 20: return "\".\" expected";
+			case 21: return "\"END\" expected";
+			case 22: return "\"+\" expected";
+			case 23: return "\"-\" expected";
+			case 24: return "\"..\" expected";
+			case 25: return "\"ANY\" expected";
+			case 26: return "\"<\" expected";
+			case 27: return "\">\" expected";
+			case 28: return "\"<.\" expected";
+			case 29: return "\".>\" expected";
+			case 30: return "\"|\" expected";
+			case 31: return "\"WEAK\" expected";
+			case 32: return "\"(\" expected";
+			case 33: return "\")\" expected";
+			case 34: return "\"[\" expected";
+			case 35: return "\"]\" expected";
+			case 36: return "\"{\" expected";
+			case 37: return "\"}\" expected";
+			case 38: return "\"SYNC\" expected";
+			case 39: return "\"IF\" expected";
+			case 40: return "\"CONTEXT\" expected";
+			case 41: return "\"(.\" expected";
+			case 42: return "\".)\" expected";
+			case 43: return "??? expected";
+			case 44: return "this symbol not expected in Coco";
+			case 45: return "this symbol not expected in TokenDecl";
+			case 46: return "invalid TokenDecl";
+			case 47: return "invalid AttrDecl";
+			case 48: return "invalid SimSet";
+			case 49: return "invalid Sym";
+			case 50: return "invalid Term";
+			case 51: return "invalid Factor";
+			case 52: return "invalid Attribs";
+			case 53: return "invalid TokenFactor";
+
+			default: return "error " + n;
+		}
+	}
 
 	public void SynErr (int line, int col, int n) {
-		string s;
-		switch (n) {
-			case 0: s = "EOF expected"; break;
-			case 1: s = "ident expected"; break;
-			case 2: s = "number expected"; break;
-			case 3: s = "string expected"; break;
-			case 4: s = "badString expected"; break;
-			case 5: s = "char expected"; break;
-			case 6: s = "\"[copy]\" expected"; break;
-			case 7: s = "\"[/copy]\" expected"; break;
-			case 8: s = "\"COMPILER\" expected"; break;
-			case 9: s = "\"IGNORECASE\" expected"; break;
-			case 10: s = "\"CHARACTERS\" expected"; break;
-			case 11: s = "\"TOKENS\" expected"; break;
-			case 12: s = "\"PRAGMAS\" expected"; break;
-			case 13: s = "\"COMMENTS\" expected"; break;
-			case 14: s = "\"FROM\" expected"; break;
-			case 15: s = "\"TO\" expected"; break;
-			case 16: s = "\"NESTED\" expected"; break;
-			case 17: s = "\"IGNORE\" expected"; break;
-			case 18: s = "\"PRODUCTIONS\" expected"; break;
-			case 19: s = "\"=\" expected"; break;
-			case 20: s = "\".\" expected"; break;
-			case 21: s = "\"END\" expected"; break;
-			case 22: s = "\"+\" expected"; break;
-			case 23: s = "\"-\" expected"; break;
-			case 24: s = "\"..\" expected"; break;
-			case 25: s = "\"ANY\" expected"; break;
-			case 26: s = "\"<\" expected"; break;
-			case 27: s = "\">\" expected"; break;
-			case 28: s = "\"<.\" expected"; break;
-			case 29: s = "\".>\" expected"; break;
-			case 30: s = "\"|\" expected"; break;
-			case 31: s = "\"WEAK\" expected"; break;
-			case 32: s = "\"(\" expected"; break;
-			case 33: s = "\")\" expected"; break;
-			case 34: s = "\"[\" expected"; break;
-			case 35: s = "\"]\" expected"; break;
-			case 36: s = "\"{\" expected"; break;
-			case 37: s = "\"}\" expected"; break;
-			case 38: s = "\"SYNC\" expected"; break;
-			case 39: s = "\"IF\" expected"; break;
-			case 40: s = "\"CONTEXT\" expected"; break;
-			case 41: s = "\"(.\" expected"; break;
-			case 42: s = "\".)\" expected"; break;
-			case 43: s = "??? expected"; break;
-			case 44: s = "this symbol not expected in Coco"; break;
-			case 45: s = "this symbol not expected in TokenDecl"; break;
-			case 46: s = "invalid TokenDecl"; break;
-			case 47: s = "invalid AttrDecl"; break;
-			case 48: s = "invalid SimSet"; break;
-			case 49: s = "invalid Sym"; break;
-			case 50: s = "invalid Term"; break;
-			case 51: s = "invalid Factor"; break;
-			case 52: s = "invalid Attribs"; break;
-			case 53: s = "invalid TokenFactor"; break;
-
-			default: s = "error " + n; break;
-		}
-		errorStream.WriteLine(errMsgFormat, line, col, s);
+		errorStream.WriteLine(errMsgFormat, line, col, strerror(n));
 		count++;
 	}
 
