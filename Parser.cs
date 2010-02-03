@@ -681,12 +681,12 @@ const int id = 0;
 			Get();
 			TokenExpr(out g);
 			Expect(33);
-			tab.MakeOption(g); 
+			tab.MakeOption(g); tokenString = noString; 
 		} else if (la.kind == 34) {
 			Get();
 			TokenExpr(out g);
 			Expect(35);
-			tab.MakeIteration(g); 
+			tab.MakeIteration(g); tokenString = noString; 
 		} else SynErr(51);
 		if (g == null) // invalid start of TokenFactor
 		 g = new Graph(tab.NewNode(Node.eps, null, 0)); 

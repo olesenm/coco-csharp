@@ -419,8 +419,8 @@ TokenFactor<out Graph g>        (. string name; int kind; .)
                                    }
                                  .)
 | '(' TokenExpr<out g> ')'
-| '[' TokenExpr<out g> ']'      (. tab.MakeOption(g); .)
-| '{' TokenExpr<out g> '}'      (. tab.MakeIteration(g); .)
+| '[' TokenExpr<out g> ']'      (. tab.MakeOption(g); tokenString = noString; .)
+| '{' TokenExpr<out g> '}'      (. tab.MakeIteration(g); tokenString = noString; .)
 )                               (. if (g == null) // invalid start of TokenFactor
                                      g = new Graph(tab.NewNode(Node.eps, null, 0)); .)
 .
