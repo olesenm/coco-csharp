@@ -317,6 +317,8 @@ public class Scanner {
 -->scan1
 		) NextCh();
 -->scan2
+		int recKind = noSym;
+		int recEnd = pos;
 		t = new Token();
 		t.pos = pos; t.col = col; t.line = line;
 		int state;
@@ -326,11 +328,24 @@ public class Scanner {
 
 		switch (state) {
 			case -1: { t.kind = eofSym; break; } // NextCh already done
-			case 0: { t.kind = noSym; break; }   // NextCh already done
+			case 0: {
+				if (recKind != noSym) {
+					tlen = recEnd - t.pos;
+					SetScannerBehindT();
+				}
+				t.kind = recKind; break;
+			} // NextCh already done
 -->scan3
 		}
 		t.val = new String(tval, 0, tlen);
 		return t;
+	}
+
+	private void SetScannerBehindT() {
+		buffer.Pos = t.pos;
+		NextCh();
+		line = t.line; col = t.col;
+		for (int i = 0; i < tlen; i++) NextCh();
 	}
 
 	// get the next token (possibly a token already seen during peeking)

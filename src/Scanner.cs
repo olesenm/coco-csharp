@@ -408,6 +408,8 @@ public class Scanner {
 			ch >= 9 && ch <= 10 || ch == 13
 		) NextCh();
 		if (ch == '/' && Comment0() ||ch == '/' && Comment1()) return NextToken();
+		int recKind = noSym;
+		int recEnd = pos;
 		t = new Token();
 		t.pos = pos; t.col = col; t.line = line;
 		int state;
@@ -417,11 +419,19 @@ public class Scanner {
 
 		switch (state) {
 			case -1: { t.kind = eofSym; break; } // NextCh already done
-			case 0: { t.kind = noSym; break; }   // NextCh already done
+			case 0: {
+				if (recKind != noSym) {
+					tlen = recEnd - t.pos;
+					SetScannerBehindT();
+				}
+				t.kind = recKind; break;
+			} // NextCh already done
 			case 1:
+				recEnd = pos; recKind = 1;
 				if (ch >= '0' && ch <= '9' || ch >= 'A' && ch <= 'Z' || ch == '_' || ch >= 'a' && ch <= 'z') {AddCh(); goto case 1;}
 				else {t.kind = 1; t.val = new String(tval, 0, tlen); CheckLiteral(); return t;}
 			case 2:
+				recEnd = pos; recKind = 2;
 				if (ch >= '0' && ch <= '9') {AddCh(); goto case 2;}
 				else {t.kind = 2; break;}
 			case 3:
@@ -431,23 +441,25 @@ public class Scanner {
 			case 5:
 				if (ch <= 9 || ch >= 11 && ch <= 12 || ch >= 14 && ch <= '&' || ch >= '(' && ch <= '[' || ch >= ']' && ch <= 65535) {AddCh(); goto case 6;}
 				else if (ch == 92) {AddCh(); goto case 7;}
-				else {t.kind = noSym; break;}
+				else {goto case 0;}
 			case 6:
 				if (ch == 39) {AddCh(); goto case 9;}
-				else {t.kind = noSym; break;}
+				else {goto case 0;}
 			case 7:
 				if (ch >= ' ' && ch <= '~') {AddCh(); goto case 8;}
-				else {t.kind = noSym; break;}
+				else {goto case 0;}
 			case 8:
 				if (ch >= '0' && ch <= '9' || ch >= 'a' && ch <= 'f') {AddCh(); goto case 8;}
 				else if (ch == 39) {AddCh(); goto case 9;}
-				else {t.kind = noSym; break;}
+				else {goto case 0;}
 			case 9:
 				{t.kind = 5; break;}
 			case 10:
+				recEnd = pos; recKind = 44;
 				if (ch >= '0' && ch <= '9' || ch >= 'A' && ch <= 'Z' || ch == '_' || ch >= 'a' && ch <= 'z') {AddCh(); goto case 10;}
 				else {t.kind = 44; break;}
 			case 11:
+				recEnd = pos; recKind = 45;
 				if (ch >= '-' && ch <= '.' || ch >= '0' && ch <= ':' || ch >= 'A' && ch <= 'Z' || ch == '_' || ch >= 'a' && ch <= 'z') {AddCh(); goto case 11;}
 				else {t.kind = 45; break;}
 			case 12:
@@ -455,48 +467,50 @@ public class Scanner {
 				else if (ch == 10 || ch == 13) {AddCh(); goto case 4;}
 				else if (ch == '"') {AddCh(); goto case 3;}
 				else if (ch == 92) {AddCh(); goto case 14;}
-				else {t.kind = noSym; break;}
+				else {goto case 0;}
 			case 13:
+				recEnd = pos; recKind = 44;
 				if (ch >= '0' && ch <= '9') {AddCh(); goto case 10;}
 				else if (ch >= 'A' && ch <= 'Z' || ch == '_' || ch >= 'a' && ch <= 'z') {AddCh(); goto case 15;}
 				else {t.kind = 44; break;}
 			case 14:
 				if (ch >= ' ' && ch <= '~') {AddCh(); goto case 12;}
-				else {t.kind = noSym; break;}
+				else {goto case 0;}
 			case 15:
+				recEnd = pos; recKind = 44;
 				if (ch >= '0' && ch <= '9') {AddCh(); goto case 10;}
 				else if (ch >= 'A' && ch <= 'Z' || ch == '_' || ch >= 'a' && ch <= 'z') {AddCh(); goto case 15;}
 				else if (ch == '=') {AddCh(); goto case 11;}
 				else {t.kind = 44; break;}
 			case 16:
 				if (ch == 'o') {AddCh(); goto case 17;}
-				else {t.kind = noSym; break;}
+				else {goto case 0;}
 			case 17:
 				if (ch == 'p') {AddCh(); goto case 18;}
-				else {t.kind = noSym; break;}
+				else {goto case 0;}
 			case 18:
 				if (ch == 'y') {AddCh(); goto case 19;}
-				else {t.kind = noSym; break;}
+				else {goto case 0;}
 			case 19:
 				if (ch == ']') {AddCh(); goto case 20;}
-				else {t.kind = noSym; break;}
+				else {goto case 0;}
 			case 20:
 				{t.kind = 6; break;}
 			case 21:
 				if (ch == 'c') {AddCh(); goto case 22;}
-				else {t.kind = noSym; break;}
+				else {goto case 0;}
 			case 22:
 				if (ch == 'o') {AddCh(); goto case 23;}
-				else {t.kind = noSym; break;}
+				else {goto case 0;}
 			case 23:
 				if (ch == 'p') {AddCh(); goto case 24;}
-				else {t.kind = noSym; break;}
+				else {goto case 0;}
 			case 24:
 				if (ch == 'y') {AddCh(); goto case 25;}
-				else {t.kind = noSym; break;}
+				else {goto case 0;}
 			case 25:
 				if (ch == ']') {AddCh(); goto case 26;}
-				else {t.kind = noSym; break;}
+				else {goto case 0;}
 			case 26:
 				{t.kind = 7; break;}
 			case 27:
@@ -528,24 +542,35 @@ public class Scanner {
 			case 40:
 				{t.kind = 42; break;}
 			case 41:
+				recEnd = pos; recKind = 34;
 				if (ch == 'c') {AddCh(); goto case 16;}
 				else if (ch == '/') {AddCh(); goto case 21;}
 				else {t.kind = 34; break;}
 			case 42:
+				recEnd = pos; recKind = 20;
 				if (ch == '.') {AddCh(); goto case 30;}
 				else if (ch == '>') {AddCh(); goto case 33;}
 				else if (ch == ')') {AddCh(); goto case 40;}
 				else {t.kind = 20; break;}
 			case 43:
+				recEnd = pos; recKind = 26;
 				if (ch == '.') {AddCh(); goto case 32;}
 				else {t.kind = 26; break;}
 			case 44:
+				recEnd = pos; recKind = 32;
 				if (ch == '.') {AddCh(); goto case 39;}
 				else {t.kind = 32; break;}
 
 		}
 		t.val = new String(tval, 0, tlen);
 		return t;
+	}
+
+	private void SetScannerBehindT() {
+		buffer.Pos = t.pos;
+		NextCh();
+		line = t.line; col = t.col;
+		for (int i = 0; i < tlen; i++) NextCh();
 	}
 
 	// get the next token (possibly a token already seen during peeking)
