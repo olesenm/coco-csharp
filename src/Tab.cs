@@ -1202,51 +1202,45 @@ public class Tab {
 	//--------- Compiler directives ------------
 
 	public void DispatchDirective(string str) {
-		int len1 = str.IndexOf('=');
-		int len2 = str.Length - len1 - 1;
-
-		if (len1 < 0 || len2 < 1)
+		int fndEqual = str.IndexOf('=');
+		if (fndEqual < 0)
 		{
 			return;
 		}
-		string name = str.Substring(0, len1);
-		string strval = str.Substring(len1+1);
-		if (name == "$namespace")
-		{
-			// set namespace only if not already set
-			if (nsName == null)
-			{
-				nsName = strval;
-			}
-			Console.WriteLine("using namespace: '" + nsName + "'");
-		}
-		else if (name == "$prefix")
-		{
-			// set prefix only if not already set
-			if (prefixName == null)
-			{
-				prefixName = strval;
-			}
-			Console.WriteLine("using prefix: '" + prefixName + "'");
-		}
-		else if (name == "$trace")
-		{
-			SetDDT(strval);
-		}
-		else if (name == "$explicitEOF")
-		{
-			if (strval == "true") {
-				explicitEOF = true;
-			} else if (strval == "false") {
-				explicitEOF = false;
-			}
-			else {
-				Console.WriteLine("ignoring unknown bool value for pragma: '" + name + "' = '" + strval + "'");
-			}
-		}
-		else
-		{
-			Console.WriteLine("ignoring unknown pragma: '" + name + "'");
+
+		string name  = str.Substring(1, fndEqual-1);   // skip leading '$'
+		string value = str.Substring(fndEqual+1);
+
+		switch (name) {
+			case "namespace":
+				// set namespace only if not already set
+				if (nsName == null)
+				{
+					nsName = value;
+					Console.WriteLine("using namespace: '" + nsName + "'");
+				}
+				break;
+			case "prefix":
+				// set prefix only if not already set
+				if (prefixName == null)
+				{
+					prefixName = value;
+					Console.WriteLine("using prefix: '" + prefixName + "'");
+				}
+				break;
+			case "trace":
+				SetDDT(value);
+				break;
+			case "define":
+				switch (value) {
+					case "EXPLICIT_EOF":
+						explicitEOF = true;
+						break;
+				}
+				break;
+			default:
+				Console.WriteLine("ignoring unknown pragma: '" + name + "'");
+				break;
 		}
 	}
 
@@ -1256,15 +1250,15 @@ public class Tab {
 		foreach (char ch in s) {
 			if ('0' <= ch && ch <= '9') ddt[ch - '0'] = true;
 			else switch (ch) {
-				case 'A' : ddt[0] = true; break; // trace automaton
-				case 'F' : ddt[1] = true; break; // list first/follow sets
-				case 'G' : ddt[2] = true; break; // print syntax graph
-				case 'I' : ddt[3] = true; break; // trace computation of first sets
-				case 'J' : ddt[4] = true; break; // print ANY and SYNC sets
-				case 'P' : ddt[8] = true; break; // print statistics
-				case 'S' : ddt[6] = true; break; // list symbol table
-				case 'X' : ddt[7] = true; break; // list cross reference table
-				default : break;
+				case 'A': ddt[0] = true; break; // trace automaton
+				case 'F': ddt[1] = true; break; // list first/follow sets
+				case 'G': ddt[2] = true; break; // print syntax graph
+				case 'I': ddt[3] = true; break; // trace computation of first sets
+				case 'J': ddt[4] = true; break; // print ANY and SYNC sets
+				case 'P': ddt[8] = true; break; // print statistics
+				case 'S': ddt[6] = true; break; // list symbol table
+				case 'X': ddt[7] = true; break; // list cross reference table
+				default: break;
 			}
 		}
 	}
