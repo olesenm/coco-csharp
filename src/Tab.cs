@@ -36,8 +36,12 @@ using System.Collections;
 
 namespace at.jku.ssw.Coco {
 
+//=====================================================================
+// Position
+//=====================================================================
 //! position of source code stretch (e.g. semantic action, resolver expressions)
-public class Position {
+public class Position
+{
 	public int beg;    //!< start relative to the beginning of the file
 	public int end;    //!< end of stretch
 	public int col;    //!< column number of start position
@@ -51,8 +55,9 @@ public class Position {
 //=====================================================================
 // Symbol
 //=====================================================================
-
-public class Symbol {
+//! Grammar Symbol
+public class Symbol
+{
 	// token kinds
 	public const int fixedToken    = 0; //!< e.g. 'a' ('b' | 'c') (structure of literals)
 	public const int classToken    = 1; //!< e.g. digit {digit}   (at least one char class)
@@ -83,8 +88,8 @@ public class Symbol {
 //=====================================================================
 // Node
 //=====================================================================
-
-public class Node {
+public class Node
+{
 	// constants for node kinds
 	public const int t    =  1;  //!< terminal symbol
 	public const int pr   =  2;  //!< pragma
@@ -129,11 +134,13 @@ public class Node {
 	}
 }
 
+
 //=====================================================================
 // Graph
 //=====================================================================
-
-public class Graph {
+//! A connection of nodes
+public class Graph
+{
 	public Node l;   //!< left end of graph = head
 	public Node r;   //!< right end of graph = list of nodes to be linked to successor graph
 
@@ -150,12 +157,13 @@ public class Graph {
 	}
 }
 
+
 //=====================================================================
 // Sets
 //=====================================================================
-
-public class Sets {
-
+//! Functions for BitArray operations
+public class Sets
+{
 	public static int Elements(BitArray s) {
 		int max = s.Count;
 		int n = 0;
@@ -185,11 +193,13 @@ public class Sets {
 
 }
 
+
 //=====================================================================
 // CharClass
 //=====================================================================
-
-public class CharClass {
+//! names character classes
+public class CharClass
+{
 	public int n;           //!< class number
 	public string name;     //!< class name
 	public CharSet set;     //!< set representing the class
@@ -203,8 +213,9 @@ public class CharClass {
 //=====================================================================
 // Tab
 //=====================================================================
-
-public class Tab {
+//! Symbol Table Management
+public class Tab
+{
 	const char CR  = '\r';
 	const char LF  = '\n';
 
@@ -1263,11 +1274,13 @@ public class Tab {
 		}
 	}
 
+	//! @cond internalClass
 	class SymbolComp : IComparer {
 		public int Compare(Object x, Object y)  {
 			return ((Symbol) x).name.CompareTo(((Symbol) y).name);
 		}
 	}
+	//! @endcond internalClass
 
 	public bool CopyFramePart
 	(
@@ -1369,8 +1382,9 @@ public class Tab {
 		}
 	}
 
-
 } // end Tab
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // end namespace
 

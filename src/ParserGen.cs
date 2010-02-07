@@ -36,7 +36,12 @@ using System.Text;
 
 namespace at.jku.ssw.Coco {
 
-public class ParserGen {
+// ----------------------------------------------------------------------------
+// ParserGen
+// ----------------------------------------------------------------------------
+//! Generation of the Recursive Descent Parser
+public class ParserGen
+{
 	const int maxTerm = 3;      //!< sets of size < maxTerm are enumerated
 	const char CR  = '\r';
 	const char LF  = '\n';
@@ -277,13 +282,19 @@ public class ParserGen {
 	}
 
 	void GenTokens() {
+		// tokens
 		foreach (Symbol sym in tab.terminals) {
 			if (Char.IsLetter(sym.name[0]))
 				gen.WriteLine("\tpublic const int _{0} = {1};", sym.name, sym.n);
 		}
-	}
 
-	void GenPragmas() {
+		gen.WriteLine
+		(
+			"\tpublic const int maxT = {0};  //<! max term (w/o pragmas)",
+			tab.terminals.Count-1
+		);
+
+		// pragmas
 		foreach (Symbol sym in tab.pragmas) {
 			gen.WriteLine("\tpublic const int _{0} = {1};", sym.name, sym.n);
 		}
@@ -364,12 +375,9 @@ public class ParserGen {
 		/* AW open namespace, if it exists */
 		if (tab.nsName != null && tab.nsName.Length > 0) {
 			gen.WriteLine("namespace {0} {{", tab.nsName);
-			gen.WriteLine();
 		}
 		CopyFramePart("-->constants");
 		GenTokens(); /* ML 2002/09/07 write the token kinds */
-		gen.WriteLine("\tpublic const int maxT = {0};", tab.terminals.Count-1);
-		GenPragmas(); /* ML 2005/09/23 write the pragma kinds */
 		CopyFramePart("-->declarations"); CopySourcePart(semDeclPos, 0);
 
 		CopyFramePart("-->pragmas"); GenCodePragmas();
@@ -400,6 +408,9 @@ public class ParserGen {
 	}
 
 } // end ParserGen
+
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // end namespace
 

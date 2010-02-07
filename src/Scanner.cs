@@ -35,8 +35,12 @@ using System.Collections;
 namespace at.jku.ssw.Coco {
 
 
-
-public class Token {
+// ----------------------------------------------------------------------------
+// Token
+// ----------------------------------------------------------------------------
+//! Scanner Token
+public class Token
+{
 	public int kind;    //!< token kind
 	public int pos;     //!< token position in the source text (starting at 0)
 	public int col;     //!< token column (starting at 1)
@@ -45,10 +49,13 @@ public class Token {
 	public Token next;  //!< Tokens are kept in linked list
 }
 
-//-----------------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 // Buffer
-//-----------------------------------------------------------------------------------
-public class Buffer {
+//-----------------------------------------------------------------------------
+//! Scanner Buffer
+public class Buffer
+{
 	// This Buffer supports the following cases:
 	// 1) seekable stream (file)
 	//    a) whole stream in buffer
@@ -187,10 +194,13 @@ public class Buffer {
 	}
 }
 
-//-----------------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 // UTF8Buffer
-//-----------------------------------------------------------------------------------
-public class UTF8Buffer: Buffer {
+//-----------------------------------------------------------------------------
+//! A Scanner Buffer variant that decodes UTF-8 characters into 16bit unicode
+public class UTF8Buffer: Buffer
+{
 	public UTF8Buffer(Buffer b): base(b) {}
 
 	public override int Read() {
@@ -225,10 +235,13 @@ public class UTF8Buffer: Buffer {
 	}
 }
 
-//-----------------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 // Scanner
-//-----------------------------------------------------------------------------------
-public class Scanner {
+//-----------------------------------------------------------------------------
+//! A Coco/R Scanner
+public class Scanner
+{
 	const char EOL = '\n';
 	const int eofSym = 0; /* pdt */
 	const int maxT = 43;
@@ -601,5 +614,8 @@ public class Scanner {
 	public void ResetPeek () { pt = tokens; }
 
 } // end Scanner
+
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // end namespace

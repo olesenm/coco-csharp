@@ -39,9 +39,9 @@ namespace at.jku.ssw.Coco {
 //-----------------------------------------------------------------------------
 //  State
 //-----------------------------------------------------------------------------
-
 //! state of finite automaton
-public class State {
+public class State
+{
 	public int nr;              //!< state number
 	public Action firstAction;  //!< to first action of this state
 	public Symbol endOf;        //!< recognized token if state is final
@@ -73,12 +73,13 @@ public class State {
 
 }
 
+
 //-----------------------------------------------------------------------------
 //  Action
 //-----------------------------------------------------------------------------
-
 //! action of finite automaton
-public class Action {
+public class Action
+{
 	public int typ;             //!< type of action symbol: clas, chr
 	public int sym;             //!< action symbol
 	public int tc;              //!< transition code: normalTrans, contextTrans
@@ -130,12 +131,13 @@ public class Action {
 
 }
 
+
 //-----------------------------------------------------------------------------
 //  Target
 //-----------------------------------------------------------------------------
-
 //! set of states that are reached by an action
-public class Target {
+public class Target
+{
 	public State state;         //!< target state
 	public Target next;
 
@@ -144,12 +146,13 @@ public class Target {
 	}
 }
 
+
 //-----------------------------------------------------------------------------
 //  Melted
 //-----------------------------------------------------------------------------
-
-//!< info about melted states
-public class Melted {
+//! info about melted states
+public class Melted
+{
 	public BitArray set;        //!< set of old states
 	public State state;         //!< new state
 	public Melted next;
@@ -159,12 +162,13 @@ public class Melted {
 	}
 }
 
+
 //-----------------------------------------------------------------------------
 //  Comment
 //-----------------------------------------------------------------------------
-
 //! info about comment syntax
-public class Comment {
+public class Comment
+{
 	public string start;
 	public string stop;
 	public bool nested;
@@ -179,10 +183,12 @@ public class Comment {
 //-----------------------------------------------------------------------------
 //  CharSet
 //-----------------------------------------------------------------------------
-
-public class CharSet {
-
-	public class Range {
+//! A set containing ranges of characters
+public class CharSet
+{
+	//! A character range within a character set
+	public class Range
+	{
 		public int from, to;
 		public Range next;
 		public Range(int from, int to) { this.from = from; this.to = to; }
@@ -289,11 +295,13 @@ public class CharSet {
 	}
 }
 
+
 //-----------------------------------------------------------------------------
 //  DFA
 //-----------------------------------------------------------------------------
-
-public class DFA {
+//! Generation of the Scanner Automaton
+public class DFA
+{
 	private int maxStates;
 	private int lastStateNr;   //!< highest state number
 	private State firstState;
@@ -936,7 +944,6 @@ public class DFA {
 		CopyFramePart("-->namespace");
 		if (tab.nsName != null && tab.nsName.Length > 0) {
 			gen.WriteLine("namespace {0} {{", tab.nsName);
-			gen.WriteLine();
 		}
 		CopyFramePart("-->declarations");
 		gen.WriteLine("\tconst int maxT = {0};", tab.terminals.Count-1);
@@ -1003,6 +1010,9 @@ public class DFA {
 	}
 
 } // end DFA
+
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // end namespace
 

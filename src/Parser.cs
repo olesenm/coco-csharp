@@ -36,15 +36,19 @@ using System;
 namespace at.jku.ssw.Coco {
 
 
-
-public class Parser {
+// ----------------------------------------------------------------------------
+// Parser
+// ----------------------------------------------------------------------------
+//! A Coco/R Parser
+public class Parser
+{
 	public const int _EOF = 0;
 	public const int _ident = 1;
 	public const int _number = 2;
 	public const int _string = 3;
 	public const int _badString = 4;
 	public const int _char = 5;
-	public const int maxT = 43;
+	public const int maxT = 43;  //<! max term (w/o pragmas)
 	public const int _ddtSym = 44;
 	public const int _directive = 45;
 
@@ -750,7 +754,12 @@ const int isIdent   = 0;
 } // end Parser
 
 
-public class Errors {
+//-----------------------------------------------------------------------------
+// Errors
+//-----------------------------------------------------------------------------
+//! Parser error handling
+public class Errors
+{
 	public int count = 0;                                    // number of errors detected
 	public System.IO.TextWriter errorStream = Console.Out;   // error messages go to this stream
 	public string errMsgFormat = "-- line {0} col {1}: {2}"; // 0=line, 1=column, 2=text
@@ -841,8 +850,15 @@ public class Errors {
 } // Errors
 
 
+//-----------------------------------------------------------------------------
+// FatalError
+//-----------------------------------------------------------------------------
+//! Parser fatal error handling
 public class FatalError: Exception {
 	public FatalError(string m): base(m) {}
 }
+
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // end namespace
