@@ -442,19 +442,25 @@ public class Tab
 		return g;
 	}
 
-  public void SetContextTrans(Node p) { // set transition code in the graph rooted at p
-    while (p != null) {
-      if (p.typ == Node.chr || p.typ == Node.clas) {
-        p.code = Node.contextTrans;
-      } else if (p.typ == Node.opt || p.typ == Node.iter) {
-        SetContextTrans(p.sub);
-      } else if (p.typ == Node.alt) {
-        SetContextTrans(p.sub); SetContextTrans(p.down);
-      }
-      if (p.up) break;
-      p = p.next;
-    }
-  }
+	public void SetContextTrans(Node p) { // set transition code in the graph rooted at p
+		while (p != null) {
+			switch (p.typ) {
+				case Node.chr:
+				case Node.clas:
+					p.code = Node.contextTrans;
+					break;
+				case Node.opt:
+				case Node.iter:
+					SetContextTrans(p.sub);
+					break;
+				case Node.alt:
+					SetContextTrans(p.sub); SetContextTrans(p.down);
+					break;
+			}
+			if (p.up) break;
+			p = p.next;
+		}
+	}
 
 	//------------ graph deletability check -----------------
 
