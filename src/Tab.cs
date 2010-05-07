@@ -1286,7 +1286,7 @@ public class Tab
 			return ((Symbol) x).name.CompareTo(((Symbol) y).name);
 		}
 	}
-	//! @endcond internalClass
+	//! @endcond
 
 	public bool CopyFramePart
 	(
