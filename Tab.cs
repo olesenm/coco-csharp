@@ -1096,7 +1096,7 @@ public class Tab {
 		foreach (Symbol sym in nonterminals) {
 			if (!visited[sym.n]) {
 				ok = false;
-				errors.SemErr("  " + sym.name + " cannot be reached");
+				errors.Warning("  " + sym.name + " cannot be reached");
 			}
 		}
 		return ok;
