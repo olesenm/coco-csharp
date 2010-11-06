@@ -13,9 +13,9 @@ datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
 exec_prefix = @exec_prefix@
-libdir = @libdir@
 htmldir = @htmldir@
 includedir = @includedir@
+mandir = @mandir@/man1
 prefix = @prefix@
 srcdir = @srcdir@
 
@@ -23,63 +23,85 @@ INSTALL      = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 DATA_FILES = $(srcdir)/Parser.frame $(srcdir)/Scanner.frame
 DOC_FILES  = $(srcdir)/Coco-cs.atg
-DATA_DIR   = $(datarootdir)/coco-cs
-LIB_COCO   = $(libdir)/coco-cs
 
-COCO = ../Coco.net
-WRAPPER = coco-cs
+COCONET = Coco.net
+COCONAME = coco-cs
+MANEXT = 1.gz
+
+#---------------------------------------------------------------------------
+# DESTDIR is designed to facilitate making packages.  Normally it is empty
+#---------------------------------------------------------------------------
+#DESTDIR =
+DEST_BINDIR  = $(DESTDIR)$(bindir)
+DEST_DOCDIR  = $(DESTDIR)$(docdir)
+DEST_DATADIR = $(DESTDIR)$(datarootdir)/$(COCONAME)
+DEST_MANDIR  = $(DESTDIR)$(mandir)
 
 # -----------------------------------------------------------------------------
 # There should be no need to modify anything below here.
 # -----------------------------------------------------------------------------
 
-all: $(COCO) $(WRAPPER)
+all: $(COCONET) $(COCONAME) $(COCONAME).$(MANEXT)
 
-$(COCO): *.cs
+$(COCONET): *.cs
 	$(CSC) -out:$@ $(CSFLAGS) $^
 
-$(WRAPPER): $(WRAPPER).in Makefile
-	sed -e "s|\@LIB_COCO\@|$(LIB_COCO)|g" < $< > $@
+$(COCONAME): $(COCONAME).in Makefile
+	sed -e "s|\@LIB_COCO\@|$(datarootdir)/$(COCONAME)|g" < $< > $@
 	chmod +x $@
 
+$(COCONAME).$(MANEXT): ../etc/$(COCONAME).pod
+	@echo
+	@echo "create man pages from pod sources"
+	@echo
+	pod2man -c "User Commands" -r "$(COCONAME)-@PACKAGE_VERSION@" $^ | gzip > $@
+
+
 # -----------------------------------------------------------------------------
+# clean targets
 
 clean:
-	/bin/rm -f *~ \#*
+	/bin/rm -f *~ \#* $(COCONET) $(COCONAME).$(MANEXT)
 
 distclean: clean
-	/bin/rm -rf Makefile $(WRAPPER) $(srcdir)/*.bak
+	/bin/rm -rf Makefile $(COCONAME) $(srcdir)/*.bak
+
+
+# -----------------------------------------------------------------------------
+# installation
 
 install_bin_directories:
-	mkdir -p $(bindir)
-
-install_lib_directories:
-	mkdir -p $(LIB_COCO)
+	mkdir -p $(DEST_BINDIR)
 
 install_data_directories:
-	mkdir -p $(DATA_DIR)
+	mkdir -p $(DEST_DATADIR)
+
+install_man_directories:
+	mkdir -p $(DEST_MANDIR)
+
 
 install_bin: install_bin_directories
-	$(INSTALL) $(WRAPPER) $(bindir)/
-
-install_lib: install_lib_directories
-	$(INSTALL) $(COCO) $(LIB_COCO)/
+	$(INSTALL) $(COCONAME) $(DEST_BINDIR)/
 
 install_data: install_data_directories
-	@for i in $(DATA_FILES); \
+	@for i in $(DATA_FILES) $(COCONET); \
 	do \
-		echo $(INSTALL_DATA) $$i $(DATA_DIR)/; \
-		$(INSTALL_DATA) $$i $(DATA_DIR)/; \
+		echo $(INSTALL_DATA) $$i $(DEST_DATADIR)/; \
+		$(INSTALL_DATA) $$i $(DEST_DATADIR)/; \
 		if [ "$$?" != "0" ]; then \
 		  exit 1; \
 		fi; \
 	done
 
-install: all install_bin install_lib install_data
+install_man: install_man_directories
+	$(INSTALL_DATA) $(COCONAME).$(MANEXT) $(DEST_MANDIR)/
+
+install: all install_bin install_data install_man
+
 
 .PHONY: all \
-    install_bin install_bin_directories \
-    install_lib install_lib_directories \
-    install_data install_bin_directories
+    install_bin  install_bin_directories  \
+    install_data install_data_directories \
+    install_man  install_man_directories
 
 # -----------------------------------------------------------------------------

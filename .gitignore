@@ -28,8 +28,9 @@
 # Corefiles
 core
 
-# ignore generated executable
-/Coco.net
+# ignore generated executables, manpage
+/src/Coco.net
+/src/coco-cs*gz
 
 # ignore Doxygen docs
 /html

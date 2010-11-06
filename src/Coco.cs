@@ -152,7 +152,7 @@ public class Coco {
 
 	public static int Main (string[] arg)
 	{
-		Console.WriteLine("Coco/R C# (13 Oct 2010)");
+		Console.WriteLine("Coco/R C# (06 Nov 2010)");
 		string srcName = null, nsName = null, prefixName = null;
 		string frameDir = null, ddtString = null, outDir = null;
 		bool makeBackup = false;

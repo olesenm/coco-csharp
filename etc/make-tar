@@ -1,0 +1,26 @@
+#!/bin/sh
+# pack into a tar.gz with a particular version number
+# the form package-version.tar.gz is expected by an rpm packager
+
+package=coco-cs
+treeish=HEAD
+
+cd "${0%/*}/.." || exit 1    # run from top-level directory
+
+# get default version from configure information
+version=$(sed -ne "s/^PACKAGE_VERSION=//p" configure | sed -e "s/'//g" )
+
+[ "$#" -gt 0 ] && version=$1
+
+git archive --format tar --prefix "$package-$version/" $treeish | \
+    gzip -9 > $package-$version.tar.gz
+
+echo
+echo "created"
+echo
+echo "    $PWD/$package-$version.tar.gz"
+echo
+echo "from $treeish"
+echo
+
+# -----------------------------------------------------------------------------

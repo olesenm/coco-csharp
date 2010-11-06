@@ -42,10 +42,10 @@ done
 
 echo "compile Coco executable"
 echo "~~~~~~~~~~~~~~~~~~~~~~~"
-echo "gmcs src/*.cs -out:Coco.net -target:exe $warn"
+echo "gmcs src/*.cs -out:src/Coco.net -target:exe $warn"
 echo
 
-gmcs src/*.cs -out:Coco.net -target:exe
+gmcs src/*.cs -out:src/Coco.net -target:exe
 if [ $? -eq 0 ]
 then
     echo

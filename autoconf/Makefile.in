@@ -1,11 +1,21 @@
 # -*- sh -*-
 
 # This is a UNIX-only makefile for autoconf
-# -----------------------------------------------------------------------------
 
-all: Coco
+# If you want to change these variables, re-run the configure script.
+INSTALL= @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+libdir = @libdir@
+pkgconfigdir = @pkgconfigdir@
+#---------------------------------------------------------------------------
+# DESTDIR is designed to facilitate making packages.  Normally it is empty
+#---------------------------------------------------------------------------
+#DESTDIR =
+DEST_PKGCONFIGDIR = $(DESTDIR)$(pkgconfigdir)
 
-Coco: makefiles
+all: makefiles
 	cd src && $(MAKE) all
 
 Makefile: configure autoconf/Makefile.in
@@ -32,10 +42,10 @@ clean:
 docclean:
 	@echo "remove doxygen documentation"
 	@echo
-	/bin/rm -f html/*
+	/bin/rm -rf html/*
 
 distclean: docclean
-	/bin/rm -f *~ Coco.net Makefile config.status config.log config.cache
+	/bin/rm -f *~ Makefile config.status config.log config.cache
 	cd src && $(MAKE) distclean
 
 install: makefiles
@@ -53,6 +63,6 @@ autoconf/config.guess: /usr/share/misc/config.guess
 autoconf/config.sub: /usr/share/misc/config.sub
 	/bin/cp -f /usr/share/misc/config.sub autoconf/config.sub
 
-.PHONY: Coco all clean docclean distclean install makefiles
+.PHONY: all clean doc docclean distclean install makefiles
 
 # -----------------------------------------------------------------------------
