@@ -1,14 +1,14 @@
 Summary: The Compiler Generator Coco/R, C# version
 Name: coco-cs
 Version: 20101106
-Release: 1
+Release: 2
 License: GPL
-Group:  Development/Languages/C++
+Group:  Development/Languages/C#
 Source0: https://github.com/downloads/olesenm/coco-csharp/coco-cs-%{version}.tar.gz
 URL: http://www.ssw.uni-linz.ac.at/coco/
 Provides: coco-cs
-BuildRequires: mono-core
 Requires: mono-core
+BuildRequires: mono-core perl
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 
@@ -41,5 +41,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/*
 
 %changelog
+* Sun Nov  7 2010 Mark Olesen
+- corrected category, build requires perl
+
 * Sat Nov  6 2010 Mark Olesen
 - created spec file
