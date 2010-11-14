@@ -26,7 +26,7 @@ DOC_FILES  = $(srcdir)/Coco-cs.atg
 
 COCONET = Coco.net
 COCONAME = coco-cs
-MANEXT = 1.gz
+MANEXT = .1.gz
 
 #---------------------------------------------------------------------------
 # DESTDIR is designed to facilitate making packages.  Normally it is empty
@@ -45,16 +45,22 @@ all: net bin man
 
 bin: $(COCONAME)
 net: $(COCONET)
-man: $(COCONAME).$(MANEXT)
+man: $(COCONAME)$(MANEXT)
+
+#
+# (re)create the parser from the atg
+#
+parser: net
+	$(MONO) $(COCONET) $(srcdir)/Coco-cs.atg -bak
 
 $(COCONET): *.cs
 	$(CSC) -out:$@ $(CSFLAGS) $^
 
 $(COCONAME): $(COCONAME).in Makefile
-	sed -e "s|\@LIB_COCO\@|$(datarootdir)/$(COCONAME)|g" < $< > $@
+	sed -e "s|\@MONO\@|$(MONO)|g" -e "s|\@LIB_COCO\@|$(datarootdir)/$(COCONAME)|g" < $< > $@
 	chmod +x $@
 
-$(COCONAME).$(MANEXT): ../etc/$(COCONAME).pod
+$(COCONAME)$(MANEXT): ../etc/$(COCONAME).pod
 	@echo
 	@echo "create man pages from pod sources"
 	@echo
@@ -65,7 +71,7 @@ $(COCONAME).$(MANEXT): ../etc/$(COCONAME).pod
 # clean targets
 
 clean:
-	/bin/rm -f *~ \#* $(COCONET) $(COCONAME).$(MANEXT)
+	/bin/rm -f *~ \#* $(COCONET) $(COCONAME)$(MANEXT)
 
 distclean: clean
 	/bin/rm -rf Makefile $(COCONAME) $(srcdir)/*.bak
@@ -98,12 +104,12 @@ install_data: install_data_directories
 	done
 
 install_man: install_man_directories
-	$(INSTALL_DATA) $(COCONAME).$(MANEXT) $(DEST_MANDIR)/
+	$(INSTALL_DATA) $(COCONAME)$(MANEXT) $(DEST_MANDIR)/
 
 install: all install_bin install_data install_man
 
 
-.PHONY: all bin net man \
+.PHONY: all bin net man parser \
     install_bin  install_bin_directories  \
     install_data install_data_directories \
     install_man  install_man_directories

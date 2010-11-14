@@ -20,6 +20,9 @@ all: makefiles
 man: makefiles
 	cd src && $(MAKE) man
 
+parser: makefiles
+	cd src && $(MAKE) parser
+
 Makefile: configure autoconf/Makefile.in
 	@echo "Makefile is older than the configure script".
 	@echo "Please re-run the configure script."
@@ -65,6 +68,6 @@ autoconf/config.guess: /usr/share/misc/config.guess
 autoconf/config.sub: /usr/share/misc/config.sub
 	/bin/cp -f /usr/share/misc/config.sub autoconf/config.sub
 
-.PHONY: all clean doc docclean distclean install makefiles man
+.PHONY: all clean doc docclean distclean install makefiles man parser
 
 # -----------------------------------------------------------------------------
