@@ -1388,6 +1388,14 @@ public class Tab
 		}
 	}
 
+	public void AddNotice(StreamWriter dest) {
+		dest.WriteLine
+		(
+			"// This file was generated with Coco/R C#, version: {0}",
+			Coco.VERSION
+		);
+	}
+
 } // end Tab
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

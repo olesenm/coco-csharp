@@ -940,6 +940,7 @@ public class DFA
 		OpenGen();
 		CopyFramePart("-->begin", false);
 		tab.CopySourcePart(gen, tab.copyPos, 0);
+		tab.AddNotice(gen);
 
 		CopyFramePart("-->namespace");
 		if (tab.nsName != null && tab.nsName.Length > 0) {

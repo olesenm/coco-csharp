@@ -368,7 +368,8 @@ public class ParserGen
 
 		OpenGen();
 		CopyFramePart("-->begin", false);
-		CopySourcePart(tab.copyPos, 0);
+		tab.CopySourcePart(gen, tab.copyPos, 0);
+		tab.AddNotice(gen);
 
 		if (preamblePos != null) { CopySourcePart(preamblePos, 0); gen.WriteLine(); }
 		CopyFramePart("-->namespace");
