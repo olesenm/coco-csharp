@@ -1,0 +1,20 @@
+Source: coco-cs
+Section: devel
+Priority: optional
+Maintainer: Markus Loeberbauer <Loeberbauer@ssw.jku.at>
+Build-Depends: debhelper (>= 7), mono-devel
+Standards-Version: 3.8.1
+Homepage: http://www.ssw.uni-linz.ac.at/Research/Projects/Coco/
+
+Package: coco-cs
+Architecture: all
+Depends: mono-runtime
+Description: Coco/R Compiler Generator (C-Sharp Version)
+ Coco/R is a compiler generator, which takes an attributed grammar of a source
+ language and generates a scanner and a parser for this language. The scanner
+ works as a deterministic finite automaton. The parser uses recursive descent.
+ LL(1) conflicts can be resolved by a multi-symbol lookahead or by semantic
+ checks. Thus the class of accepted grammars is LL(k) for an arbitrary k.
+ .
+ To start Coco call cococs, which is a shell script in /usr/bin.
+
