@@ -117,9 +117,14 @@ namespace at.jku.ssw.Coco {
 //! Entry point for standalone program
 public class Coco {
 
-	public static void printUsage (string message)
+	//! The version number (should correspond to the ISO-date)
+	public const string VERSION = "20101106";
+
+	static void printUsage (string message)
 	{
-		if (message != null) Console.WriteLine(message);
+		if (message != null) {
+			Console.WriteLine("Error: {0}", message);
+		}
 
 		Console.WriteLine
 		(
@@ -152,19 +157,29 @@ public class Coco {
 
 	public static int Main (string[] arg)
 	{
-		Console.WriteLine("Coco/R C# (06 Nov 2010)");
+		Console.WriteLine("Coco/R C#, version: {0}", VERSION);
+
 		string srcName = null, nsName = null, prefixName = null;
 		string frameDir = null, ddtString = null, outDir = null;
 		bool makeBackup = false;
 		bool traceToFile = true;
 		int retVal = 1;
 
-		for (int i = 0; i < arg.Length; i++) {
-			if (arg[i] == "-help") {
+		// pass 1: find -help, -version options
+		foreach (string opt in arg) {
+			if (opt == "-help") {
 				printUsage(null);
 				return 0;
 			}
-			else if (arg[i] == "-namespace") {
+			if (opt == "-version") {
+				// version already printed above
+				return 0;
+			}
+		}
+
+		// pass 2: process other options
+		for (int i = 0; i < arg.Length; i++) {
+			if (arg[i] == "-namespace") {
 				if (++i == arg.Length) {
 					printUsage("missing parameter on -namespace");
 					return retVal;
@@ -212,7 +227,7 @@ public class Coco {
 				makeBackup = true;
 			}
 			else if (arg[i][0] == '-') {
-				printUsage("Error: unknown option: '" + arg[i] + "'");
+				printUsage("unknown option: '" + arg[i] + "'");
 				return retVal;
 			}
 			else if (srcName != null) {

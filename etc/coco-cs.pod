@@ -57,6 +57,12 @@ The output directory for the generated files.
 
 Save existing Parser/Scanner files as .bak
 
+=item -version
+
+Exit immediately after displaying the program version information.
+This can be useful to check that a minimum version of Coco/R is being
+used.
+
 =item -help
 
 Simple usage information.
