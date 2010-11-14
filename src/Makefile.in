@@ -41,7 +41,11 @@ DEST_MANDIR  = $(DESTDIR)$(mandir)
 # There should be no need to modify anything below here.
 # -----------------------------------------------------------------------------
 
-all: $(COCONET) $(COCONAME) $(COCONAME).$(MANEXT)
+all: net bin man
+
+bin: $(COCONAME)
+net: $(COCONET)
+man: $(COCONAME).$(MANEXT)
 
 $(COCONET): *.cs
 	$(CSC) -out:$@ $(CSFLAGS) $^
@@ -54,7 +58,7 @@ $(COCONAME).$(MANEXT): ../etc/$(COCONAME).pod
 	@echo
 	@echo "create man pages from pod sources"
 	@echo
-	pod2man -c "User Commands" -r "$(COCONAME)-@PACKAGE_VERSION@" $^ | gzip > $@
+	pod2man -c "User Commands" -r "$(COCONAME)-@PACKAGE_VERSION@" $^ | gzip -9 > $@
 
 
 # -----------------------------------------------------------------------------
@@ -99,7 +103,7 @@ install_man: install_man_directories
 install: all install_bin install_data install_man
 
 
-.PHONY: all \
+.PHONY: all bin net man \
     install_bin  install_bin_directories  \
     install_data install_data_directories \
     install_man  install_man_directories

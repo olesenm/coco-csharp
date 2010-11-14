@@ -1,5 +1,4 @@
 # -*- sh -*-
-
 # This is a UNIX-only makefile for autoconf
 
 # If you want to change these variables, re-run the configure script.
@@ -17,6 +16,9 @@ DEST_PKGCONFIGDIR = $(DESTDIR)$(pkgconfigdir)
 
 all: makefiles
 	cd src && $(MAKE) all
+
+man: makefiles
+	cd src && $(MAKE) man
 
 Makefile: configure autoconf/Makefile.in
 	@echo "Makefile is older than the configure script".
@@ -63,6 +65,6 @@ autoconf/config.guess: /usr/share/misc/config.guess
 autoconf/config.sub: /usr/share/misc/config.sub
 	/bin/cp -f /usr/share/misc/config.sub autoconf/config.sub
 
-.PHONY: all clean doc docclean distclean install makefiles
+.PHONY: all clean doc docclean distclean install makefiles man
 
 # -----------------------------------------------------------------------------

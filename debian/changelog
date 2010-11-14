@@ -1,8 +1,17 @@
+coco-cs (20101106-1.1) UNRELEASED; urgency=low
+
+  * Non-maintainer upload
+  * Adjust debian packaging for GNU autoconfig system
+  * Update debian/control Depends, Build-Depends, Standards-Version
+  * Include atg in the debian packaging
+
+ -- Mark Olesen <mark.olesen@faurecia.com>  Sun, 14 Nov 2010 11:20:01 +0100
+
 coco-cs (20090622-1) unstable; urgency=low
 
   * New upstream release
   * More robust UTF-8 handling in ParserGen.CopySourcePart and
-    Scanner.GetString. 
+    Scanner.GetString.
   * Simplified Coco.atg (using statements handled by ANY).
 
  -- Markus Loeberbauer <Loeberbauer@ssw.jku.at>  Tue, 23 Jun 2009 15:25:31 +0200
@@ -148,7 +157,7 @@ coco-cs (20050316-2) unstable; urgency=low
 
 coco-cs (20050316-1) unstable; urgency=low
 
-  * Scanners can read arbitrariliy large files now (needed for parsing 
+  * Scanners can read arbitrariliy large files now (needed for parsing
     log files with several hundred megabytes).
   * Generated scanners are substantially faster than before (about 30%).
 
@@ -165,13 +174,13 @@ coco-cs (20050111-1) unstable; urgency=low
 
  -- Markus Loeberbauer <Loeberbauer@ssw.jku.at>  Tue, 11 Jan 2005 17:40:00 +0100
 
-cocosorucescs (2004.10.27-2) unstable; urgency=low
+cocosourcescs (2004.10.27-2) unstable; urgency=low
 
   * Minor bug fixes in package.
 
  -- Markus Loeberbauer <Loeberbauer@ssw.jku.at>  Wed, 27 Oct 2004 18:40:00 +0100
 
-cocosorucescs (2004.10.27-1) unstable; urgency=low
+cocosourcescs (2004.10.27-1) unstable; urgency=low
 
   * If an expression in curly braces or square brackets is deletable
     (as in [[x]]) a new LL(1) warning is printed: contents of [...]
@@ -179,7 +188,7 @@ cocosorucescs (2004.10.27-1) unstable; urgency=low
 
  -- Markus Loeberbauer <Loeberbauer@ssw.jku.at>  Wed, 27 Oct 2004 17:15:00 +0100
 
-cocosorucescs (2004.10.11-1) unstable; urgency=low
+cocosourcescs (2004.10.11-1) unstable; urgency=low
 
   * Blanks are specified as white spaces in the scanner frame now,
     so one can delete this if one doesn't want to ignore blanks.
@@ -187,14 +196,14 @@ cocosorucescs (2004.10.11-1) unstable; urgency=low
 
  -- Markus Loeberbauer <Loeberbauer@ssw.jku.at>  Tue, 11 Oct 2004 09:06:00 +0100
 
-cocosorucescs (2004.06.28-3) unstable; urgency=low
+cocosourcescs (2004.06.28-3) unstable; urgency=low
 
   * Bug fix in ParserGen.cs and DFA.cs: Path seperator changed from "\\" to
     Path.DirectorySeperatorChar
 
  -- Markus Loeberbauer <Loeberbauer@ssw.jku.at>  Tue, 24 Aug 2004 12:15:00 +0100
 
-cocosorucescs (2004.06.28-2) unstable; urgency=low
+cocosourcescs (2004.06.28-2) unstable; urgency=low
 
   * Bug fix in Coco.atg: invalid TokenFactor and Terms caused Coco to crash.
 
@@ -216,7 +225,7 @@ cocosourcescs (2004.06.28-1) unstable; urgency=low
  -- Markus Loeberbauer <Loeberbauer@ssw.jku.at>  Tue,  06 Jul 2004 16:00:00 +0100
 
 cocosourcescs (2004.04.14-1) unstable; urgency=low
- 
+
   * Method Tab.IgnoreCase added
   * The frames directory is not specified by the environment variable CRFRAMES
     any more but can be specified with the command line option -frames
@@ -228,20 +237,20 @@ cocosourcescs (2004.04.14-1) unstable; urgency=low
 
 cocosourcescs (2004.04.06-4) unstable; urgency=low
 
-  * corrected changelog  
+  * corrected changelog
   * directory names to lower case
 
  -- Markus Loeberbauer <Loeberbauer@ssw.jku.at>  Tue,  13 Apr 2004 09:54:00 +0100
 
 cocosourcescs (2004.04.06-3) unstable; urgency=low
 
-  * Minor change: Error message changed form obsolete to misplaced resolver  
+  * Minor change: Error message changed form obsolete to misplaced resolver
 
  -- Markus Loeberbauer <Loeberbauer@ssw.jku.at>  Wed,  07 Apr 2004 19:00:00 +0100
 
 cocosourcescs (2004.04.06-2) unstable; urgency=low
 
-  * Documentation separated to cocosourcesdoc 
+  * Documentation separated to cocosourcesdoc
 
  -- Markus Loeberbauer <Loeberbauer@ssw.jku.at>  Wed,  07 Apr 2004 19:00:00 +0100
 
@@ -253,7 +262,7 @@ cocosourcescs (2004.04.06-1) unstable; urgency=low
       - field ignoreRslvs removed
       - method Expected0 added
       - method Expected0 called twice in CheckAlts and once in CheckRes
-      - CheckRes: computation of all start symbols of 
+      - CheckRes: computation of all start symbols of
         an alternative chain modified
   * UserManual.pdf updated
   * Package name changed to lower case

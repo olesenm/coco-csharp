@@ -1,45 +1,38 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
-# Sample debian/rules that uses debhelper.
-# This file was originally written by Joey Hess and Craig Small.
-# As a special exception, when this file is copied by dh-make into a
-# dh-make output file, you may use that output file without restriction.
-# This special exception was added by Craig Small in version 0.37 of dh-make.
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+# These are used for cross-compiling and for saving the configure script
+# from having to guess our platform (since we know it already)
+# DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+# DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
-export MONO_SHARED_DIR = $(CURDIR)/debian/mono/
+configure_flags = --prefix=/usr
 
-configure: configure-stamp
-configure-stamp:
-	dh_testdir
-	# Add here commands to configure the package.
-	touch configure-stamp
-
-build: build-stamp
-
-build-stamp: configure-stamp 
-	dh_testdir
-
-	# Add here commands to compile the package.
-	( mkdir $(MONO_SHARED_DIR); \
-	  $(MAKE); \
-	  rm -rf $(MONO_SHARED_DIR); )
-	#docbook-to-man debian/coco-cs.sgml > coco-cs.1
-
-	touch $@
+# get-orig-source:
+#
 
 clean:
 	dh_testdir
 	dh_testroot
+	dh_clean
+	[ ! -f Makefile ] || $(MAKE) distclean
 	rm -f build-stamp configure-stamp
 
-	# Add here commands to clean up after the build process.
-	$(MAKE) clean
+configure: configure-stamp
+configure-stamp:
+	dh_testdir
+	./configure $(configure_flags) || \
+	  { rc=$$?; cat config.log; exit $$rc; }
+	touch $@
 
-	dh_clean 
+build: build-stamp
+build-stamp: configure-stamp 
+	dh_testdir
+	$(MAKE) -C src
+	touch $@
 
 install: build
 	dh_testdir
@@ -47,72 +40,32 @@ install: build
 	dh_prep
 	dh_installdirs
 
-	# Add here commands to install the package into debian/coco-cs.
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/coco-cs
-
+	# Install the package into debian/coco-cs
+	$(MAKE) -C src install DESTDIR=$(CURDIR)/debian/coco-cs
 
 # Build architecture-independent files here.
 binary-indep: build install
 	dh_testdir
 	dh_testroot
 	dh_installchangelogs 
-	dh_installdocs
-	dh_installexamples
-#	dh_install
-#	dh_installmenu
-#	dh_installdebconf	
-#	dh_installlogrotate
-#	dh_installemacsen
-#	dh_installpam
-#	dh_installmime
-#	dh_python
-#	dh_installinit
-#	dh_installcron
-#	dh_installinfo
-	dh_installman debian/cococs.1
 	dh_link
 	dh_strip
 	dh_compress
+	dh_installdocs src/Coco-cs.atg
+	dh_installexamples
 	dh_fixperms
-#	dh_perl
-#	dh_makeshlibs
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
-
+	dh_clean -d
 
 # Build architecture-dependent files here.
 #binary-arch: build install
-#	dh_testdir
-#	dh_testroot
-#	dh_installchangelogs 
-#	dh_installdocs
-#	dh_installexamples
-#	dh_install
-#	dh_installmenu
-#	dh_installdebconf	
-#	dh_installlogrotate
-#	dh_installemacsen
-#	dh_installpam
-#	dh_installmime
-#	dh_python
-#	dh_installinit
-#	dh_installcron
-#	dh_installinfo
-#	dh_installman debian/cococs.1
-#	dh_link
-#	dh_strip
-#	dh_compress
-#	dh_fixperms
-#	dh_perl
-#	dh_makeshlibs
-#	dh_installdeb
-#	dh_shlibdeps
-#	dh_gencontrol
-#	dh_md5sums
-#	dh_builddeb
+# We have nothing to do by default.
 
 binary: binary-indep binary-arch
 .PHONY: build clean binary-indep binary-arch binary install configure
+
+# ----------------------------------------------------------------------------

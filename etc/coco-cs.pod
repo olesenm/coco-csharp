@@ -164,7 +164,9 @@ with the same syntax. For example,
 
 =head1 SEE ALSO
 
-http://www.ssw.uni-linz.ac.at/coco/
+coco-doc(1) for examples
+
+http://www.ssw.uni-linz.ac.at/coco/ for more information
 
 
 =head1 AUTHOR

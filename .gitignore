@@ -44,6 +44,10 @@ core
 
 autom4te.cache
 
+# ignore generated debian packaging files
+/debian/files
+/debian/*.substvars
+
 # source packages - anywhere
 *.tar.bz2
 *.tar.gz
